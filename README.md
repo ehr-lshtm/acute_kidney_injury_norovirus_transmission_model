@@ -70,16 +70,22 @@ template-r/
 
 aki_aurum_code_list.txt
 * Med codes list used to define acute kidney injury in gp attendances
+
 aki_aurum_snomed_medcodes.txt
 * Snomed codes list used to define acute kidney injury in gp attendances
+
 aki_define_23_003034.txt
 * Combined code list used to define acute kidney injury in gp attendances for study 23_003034
+
 gastro_aurum_code_list.txt
 * Med codes list used to define gastroenteritis in gp attendances
+
 gastro_define_23_003034.txt
 * Code list used to define gastroenteritis in gp attendances
+
 aki_gastro_define_23_003034.txt
 * Combined code list used to define acute kidney injury and gastroenteritis in gp attendances for study 23_003034
+
 icd10_code_list.txt
 * ICD10 codes to define acute kidney injury and gastroenteritis in hospital admissions
 
@@ -97,24 +103,34 @@ HRGS
 
 01_setup.R
 * contains packages used, and colour palettes used
+
 02_observation_data.R
 * loads observation data (surveillance, hospital admissions, GP attendances counts) and formats it for use in the fitting process
+
 03_model_function.R
 * model function simulating the noromod package, and applying an observation model to fit to the observation data
+
 04_likelihood_prior_functions.R
 * contains the likelihood and prior functions used in the fitting process
+
 05_trace_sample_storage.R
 * contains the mcmc execution and sample storage functions used in the fitting process
+
 06_mcmc_outputs.R
 * contains the mcmc outputs, diagnostics used in the fitting process, and figures produced in the manuscript - includes trace plots, density plots, and posterior predictive checks
+
 07_reference_costing.R
 * contains the reference costing functions used to calculate the cost of acute kidney injury hospital admissions
+
 08_supplement.R
 * contains the supplementary information used in the manuscript
+
 fixed_parameters.R
 * contains the fixed parameters used in the model simulations
+
 replicates.R
 * contains the function used to generate the uncertainty intervals for the model simulations
+
 spline_functions.R
 * contains the spline functions used to produce the observation model
 
