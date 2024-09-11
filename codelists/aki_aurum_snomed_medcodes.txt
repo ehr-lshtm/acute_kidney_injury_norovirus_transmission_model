@@ -1,0 +1,242 @@
+SnomedCTConceptId	description	medcodeid	term	Observations	OriginalReadCode	CleansedReadCode	Term	SnomedCTDescriptionId	Release	EmisCodeCategoryId
+140031000000000	Acute nontraumatic kidney injury	8043971000006111	acute nontraumatic kidney injury	NA	NA	NA	NA	NA	NA	NA
+140031000000000	Acute nontraumatic kidney injury	8043981000006114	nontraumatic aki (acute kidney injury)	NA	NA	NA	NA	NA	NA	NA
+14669001	Acute renal failure syndrome	303915016	other acute renal failure	700	K04y	K04y.00	Other acute renal failure	2920634011	NA	32
+14669001	Acute renal failure syndrome	303916015	acute renal failure nos	4000	K04z	K04z.00	Acute renal failure NOS	2920634011	NA	32
+14669001	Acute renal failure syndrome	305191012	[x]other acute renal failure	400	Kyu20	Kyu2000	[X]Other acute renal failure	2920634011	NA	32
+14669001	Acute renal failure syndrome	1221119015	arf - acute renal failure	100	K04-1	K04..11	ARF - Acute renal failure	1221119015	NA	32
+14669001	Acute renal failure syndrome	460091000006111	acute renal failure	100000	K04	K04..00	Acute renal failure	2920634011	NA	32
+14669001	Acute renal failure syndrome	2204191000000110	acute kidney injury	300000	K04-2	K04..12	Acute kidney injury	2204191000000110	NA	32
+14669001	Acute renal failure syndrome	2732241000006113	acute renal failure syndrome	1000	^ESCTAC273224		Acute renal failure syndrome	24910011	NA	32
+14669001	Acute renal failure syndrome	2732281000006119	aki - acute kidney injury	10	^ESCTAK273228		AKI - acute kidney injury	2204201000000112	NA	32
+197585004	Acute diffuse nephritis	303819014	acute diffuse nephritis	100	K00y3	K00y300	Acute diffuse nephritis	303819014	NA	32
+197590001	Nephrotic syndrome with membranous glomerulonephritis	303826014	nephrotic syndrome with membranous glomerulonephritis	6000	K011	K011.00	Nephrotic syndrome with membranous glomerulonephritis	303826014	NA	32
+197595006	Nephrotic syndrome, diffuse membranous glomerulonephritis	303834015	nephrotic syndrome, diffuse membranous glomerulonephritis	1000	K016	K016.00	Nephrotic syndrome, diffuse membranous glomerulonephritis	303834015	NA	32
+197720005	Isolated proteinuria with specified morphological lesion, diffuse membranous glomerulonephritis	712841000006115	isolated proteinuria with specified morphological lesion, diffuse membranous glomerulonephritis	2	K0A42	K0A4200	Isolated proteinuria with specified morphological lesion, diffuse membranous glomerulonephritis	304017018	NA	32
+236413007	Membranous glomerulonephritis - stage I	5093831000006119	membranous glomerulonephritis - stage i	1	^ESCTME509383		Membranous glomerulonephritis - stage I	354388017	NA	31
+236416004	Membranous glomerulonephritis - stage IV	5093891000006115	membranous glomerulonephritis - stage iv	3	^ESCTME509389		Membranous glomerulonephritis - stage IV	354395014	NA	31
+236424009	Acute renal impairment	5094041000006117	acute renal impairment	20	^ESCTAC509404		Acute renal impairment	354408015	NA	31
+236428007	Acute kidney injury due to nephrotoxicity	5094071000006113	nephrotoxic acute renal failure	9	^ESCTNE509407		Nephrotoxic acute renal failure	354412014	NA	32
+236429004	Acute drug-induced renal failure	354413016	acute drug-induced renal failure	800	K043	K043.00	Acute drug-induced renal failure	354413016	NA	5
+236433006	Acute-on-chronic renal failure	354417015	acute-on-chronic renal failure	5000	K0E	K0E..00	Acute-on-chronic renal failure	354417015	NA	32
+236433006	Acute-on-chronic renal failure	5094141000006118	acute on chronic renal failure	5	^ESCTAC509414		Acute on chronic renal failure	3037716017	NA	32
+236514003	Toxic nephropathy	304054010	toxic nephropathy	30	K0C4	K0C4.00	Toxic nephropathy	354531018	NA	5
+236514003	Toxic nephropathy	429141000006118	[x]toxic nephropathy, not elsewhere classified	50	Kyu15	Kyu1500	[X]Toxic nephropathy, not elsewhere classified	354531018	NA	5
+236514003	Toxic nephropathy	678091000006115	nephropathy induced by unspec drug medicament or biol subs	30	K0C2	K0C2.00	Nephropathy induced by unspec drug medicament or biol subs	354531018	NA	5
+264536006	Interstitial nephritis	5477271000006112	interstitial nephritis	20	^ESCTIN547727		Interstitial nephritis	393007018	NA	31
+269301005	Renal failure as a complication of care	403109016	renal failure as a complication of care	400	SP154	SP15400	Renal failure as a complication of care	403109016	NA	32
+28637003	Acute tubulointerstitial nephritis	47940012	acute interstitial nephritis	4000	K08y5	K08y500	Acute interstitial nephritis	47940012	NA	32
+28637003	Acute tubulointerstitial nephritis	1225985011	ain - acute interstitial nephritis	100	K08y5-1	K08y511	AIN - Acute interstitial nephritis	1225985011	NA	32
+28637003	Acute tubulointerstitial nephritis	1225986012	atin - acute tubulo-interstitial nephritis	100	K08y5-2	K08y512	ATIN - Acute tubulo-interstitial nephritis	1225986012	NA	32
+28637003	Acute tubulointerstitial nephritis	1225987015	acute tubulo-interstitial nephritis	500	K08y5-3	K08y513	Acute tubulo-interstitial nephritis	1225987015	NA	32
+28637003	Acute tubulointerstitial nephritis	14057041000006114	acute tubulointerstitial nephritis	7	^ESCT1405704		Acute tubulointerstitial nephritis	3784124019	NA	32
+28689008	Interstitial nephritis	303905010	interstitial nephritis	3000	K03y2	K03y200	Interstitial nephritis	48036015	NA	32
+28689008	Interstitial nephritis	399791000006112	[x]nephropathy induced by other drugs+biological substances	30	Kyu14	Kyu1400	[X]Nephropathy induced by other drugs+biological substances	48036015	NA	32
+307309005	Transient acute renal failure	5966771000006111	transient acute renal failure	9	^ESCTTR596677		Transient acute renal failure	450541012	NA	31
+32093003	Acute drug-induced tubulointerstitial nephritis	1227911011	acute drug-induced interstitial nephritis	300	K0C5	K0C5.00	Acute drug-induced interstitial nephritis	1227911011	NA	5
+32093003	Acute drug-induced tubulointerstitial nephritis	3016851000006110	acute drug-induced tubulointerstitial nephritis	2	^ESCTAC301685		Acute drug-induced tubulointerstitial nephritis	53631019	NA	5
+418839003	Tubulointerstitial nephritis with uveitis syndrome	6927831000006111	tubulointerstitial nephritis with uveitis syndrome	2	^ESCTTU692783		Tubulointerstitial nephritis with uveitis syndrome	2577701015	NA	31
+418839003	Tubulointerstitial nephritis with uveitis syndrome	6927841000006118	tinu - tubulointerstitial nephritis with uveitis syndrome	1	^ESCTTI692784		TINU - Tubulointerstitial nephritis with uveitis syndrome	2580217017	NA	31
+42399005	Renal failure syndrome	396711013	rf - renal failure	60000	K06	K06..00	RF - Renal failure	1229860014	NA	32
+42399005	Renal failure syndrome	424731000006111	renal failure	10000	Kyu2	Kyu2.00	Renal failure	3014127011	NA	32
+42399005	Renal failure syndrome	3183501000006111	renal failure syndrome	100	^ESCTRE318350		Renal failure syndrome	70742017	NA	32
+439990003	Drug-induced tubulointerstitial nephritis	7230511000006117	drug-induced interstitial nephritis	30	^ESCTDR723051		Drug-induced interstitial nephritis	3013069019	NA	5
+47330001	Idiopathic acute tubulointerstitial nephritis	1230447010	acute idiopathic interstitial nephritis	80	K08y6	K08y600	Acute idiopathic interstitial nephritis	1230447010	NA	32
+47330001	Idiopathic acute tubulointerstitial nephritis	14058441000006119	idiopathic acute tubulointerstitial nephritis	2	^ESCT1405844		Idiopathic acute tubulointerstitial nephritis	3784126017	NA	32
+52845002	Nephritis	303876011	membranoproliferative nephritis unspecified	400	K032	K032.00	Membranoproliferative nephritis unspecified	87940013	NA	32
+52845002	Nephritis	354346014	mixed membranous and proliferative glomerulonephritis nec	100	K032y-5	K032y15	Mixed membranous and proliferative glomerulonephritis NEC	87940013	NA	32
+52845002	Nephritis	396707019	nephritis and nephropathy unspecified	2000	K03-1	K03..11	Nephritis and nephropathy unspecified	87940013	NA	32
+52845002	Nephritis	677951000006111	nephritis	5000	K03	K03..00	Nephritis	87940013	NA	32
+52845002	Nephritis	886621000006112	nephritis nos	1000	K03-99	K03..99	Nephritis NOS	886621000006112	NA	32
+61503006	Acute nephritis	102173012	acute nephritis	10000	K00-1	K00..11	Acute nephritis	102173012	NA	32
+722119002	Idiopathic membranous glomerulonephritis	7827591000006117	idiopathic membranous glomerulonephritis	3	^ESCTID782759		Idiopathic membranous glomerulonephritis	3330958011	NA	31
+722119002	Idiopathic membranous glomerulonephritis	7827601000006113	idiopathic membranous nephropathy	2	^ESCTID782760		Idiopathic membranous nephropathy	3330959015	NA	31
+733137002	Acute kidney failure stage 1	7954321000006110	acute renal failure stage 1	9	^ESCTAC795432		Acute renal failure stage 1	3498838011	NA	31
+733138007	Acute kidney failure stage 2	7954341000006115	acute renal failure stage 2	1	^ESCTAC795434		Acute renal failure stage 2	3498840018	NA	31
+77182004	Membranous glomerulonephritis	303875010	membranous glomerulonephritis	3000	K031	K031.00	Membranous glomerulonephritis	128137019	NA	32
+851931000000000	Acute kidney injury stage 1	2206791000000119	acute kidney injury stage 1	NA	NA	NA	NA	NA	NA	NA
+851941000000000	Acute kidney injury stage 2	2206811000000118	acute kidney injury stage 2	NA	NA	NA	NA	NA	NA	NA
+851951000000000	Acute kidney injury stage 3	2206831000000114	acute kidney injury stage 3	NA	NA	NA	NA	NA	NA	NA
+100792e10	Acute kidney injury warning stage	NA	NA	NA	NA	NA	NA	NA	NA	NA
+10106002	Core needle biopsy of kidney	2661091000006115	Core needle biopsy of kidney	1	^ESCTCO266109		Core needle biopsy of kidney	17634010	NA	31
+104231000000000	Acute drug-induced renal failure	NA	NA	NA	NA	NA	NA	NA	NA	NA
+104798e10	Kidney biopsy result normal	NA	NA	NA	NA	NA	NA	NA	NA	NA
+104824e10	Insufficient histological evidence from kidney biopsy for diagnosis	NA	NA	NA	NA	NA	NA	NA	NA	NA
+104826e10	Kidney biopsy result abnormal	NA	NA	NA	NA	NA	NA	NA	NA	NA
+104827e10	Kidney biopsy result borderline abnormal	NA	NA	NA	NA	NA	NA	NA	NA	NA
+111491000000000	Nephritis caused by drug	NA	NA	NA	NA	NA	NA	NA	NA	NA
+1141000000000	Biopsy of left kidney using ultrasonographic guidance	NA	NA	NA	NA	NA	NA	NA	NA	NA
+1151000000000	Biopsy of right kidney using ultrasonographic guidance	NA	NA	NA	NA	NA	NA	NA	NA	NA
+122670001	Specimen from kidney obtained by (core) needle biopsy	NA	NA	NA	NA	NA	NA	NA	NA	NA
+1231476003	Solution for haemofiltration	NA	NA	NA	NA	NA	NA	NA	NA	NA
+129721000000000	Acute renal failure on dialysis	NA	NA	NA	NA	NA	NA	NA	NA	NA
+142347007	Kidney needle biopsy (& percutaneous)	NA	NA	NA	NA	NA	NA	NA	NA	NA
+155853001	(Nephritis NOS) or (Bright's disease)	NA	NA	NA	NA	NA	NA	NA	NA	NA
+155855008	Acute renal failure	NA	NA	NA	NA	NA	NA	NA	NA	NA
+155858005	(Nephritis &/or nephrosis NOS) or (glomerulosclerosis) or (renal osteodystrophy)	NA	NA	NA	NA	NA	NA	NA	NA	NA
+158654008	[D]Renal function test abnormal	NA	NA	NA	NA	NA	NA	NA	NA	NA
+15911000000000	Primary tubulointerstitial nephritis	NA	NA	NA	NA	NA	NA	NA	NA	NA
+1641000000000	Biopsy of bilateral kidneys using ultrasonographic guidance	NA	NA	NA	NA	NA	NA	NA	NA	NA
+164516e11	Needle biopsy of right kidney using ultrasonographic guidance	NA	NA	NA	NA	NA	NA	NA	NA	NA
+164516e11	Needle biopsy of left kidney using ultrasonographic guidance	NA	NA	NA	NA	NA	NA	NA	NA	NA
+164601e11	Percutaneous needle biopsy of left kidney using ultrasonographic guidance	NA	NA	NA	NA	NA	NA	NA	NA	NA
+164601e11	Percutaneous needle biopsy of right kidney using ultrasonographic guidance	NA	NA	NA	NA	NA	NA	NA	NA	NA
+167180005	Renal function tests abnormal	259688011	Renal function tests abnormal	60000	4512	4512.00	Renal function tests abnormal	259688011	NA	34
+167180005	Renal function tests abnormal	259696018	Renal function tests borderline	20000	4516	4516.00	Renal function tests borderline	259688011	NA	34
+167180005	Renal function tests abnormal	317849019	[D]Renal function test abnormal	10000	R144	R144.00	[D]Renal function test abnormal	259688011	NA	34
+167180005	Renal function tests abnormal	1222541011	[D]Kidney function test abnormal	3000	R144-1	R144.11	[D]Kidney function test abnormal	259688011	NA	34
+167180005	Renal function tests abnormal	4602201000006116	Abnormal results of kidney function studies	2	^ESCTAB460220		Abnormal results of kidney function studies	2475515013	NA	34
+167189006	Deteriorating renal function	NA	NA	NA	NA	NA	NA	NA	NA	NA
+197622009	Nephritis &/or nephropathy unspecified	NA	NA	NA	NA	NA	NA	NA	NA	NA
+197624005	Membranous nephritis unspecified	NA	NA	NA	NA	NA	NA	NA	NA	NA
+197638003	[X]Tubulo-interstitial nephritis, not specified as acute or chronic	NA	NA	NA	NA	NA	NA	NA	NA	NA
+197652001	Other acute renal failure	NA	NA	NA	NA	NA	NA	NA	NA	NA
+197653006	Acute renal failure NOS	NA	NA	NA	NA	NA	NA	NA	NA	NA
+197663003	Impaired renal function disorder	303943013	Impaired renal function disorder	20000	K08	K08..00	Impaired renal function disorder	303943013	NA	32
+197663003	Impaired renal function disorder	303949012	Other impaired renal function disorder	200	K08y	K08y.00	Other impaired renal function disorder	303943013	NA	32
+197663003	Impaired renal function disorder	303960015	Impaired renal function disorder NOS	3000	K08z	K08z.00	Impaired renal function disorder NOS	303943013	NA	32
+197663003	Impaired renal function disorder	396713011	Other impaired renal function disorder NOS	100	K08yz	K08yz00	Other impaired renal function disorder NOS	303943013	NA	32
+197672006	Acute interstitial nephritis	NA	NA	NA	NA	NA	NA	NA	NA	NA
+197701008	Recurrent and persistent hematuria, diffuse membranous glomerulonephritis	NA	NA	NA	NA	NA	NA	NA	NA	NA
+197710000	Membranous glomerulonephritis	NA	NA	NA	NA	NA	NA	NA	NA	NA
+197751003	Nephropathy induced by other drugs, medicaments and biological substances	NA	NA	NA	NA	NA	NA	NA	NA	NA
+197752005	Nephropathy induced by unspecifed drug, medicament or biological substance	NA	NA	NA	NA	NA	NA	NA	NA	NA
+198507006	[X]Other chronic tubulo-interstitial nephritis	NA	NA	NA	NA	NA	NA	NA	NA	NA
+198513002	[X]Other specified renal tubulo-interstitial diseases	NA	NA	NA	NA	NA	NA	NA	NA	NA
+198522001	[X]Tubulo-interstitial nephritis, not specified as acute or chronic	NA	NA	NA	NA	NA	NA	NA	NA	NA
+198525004	[X]Other acute renal failure	NA	NA	NA	NA	NA	NA	NA	NA	NA
+207464004	[D]Renal function test abnormal	NA	NA	NA	NA	NA	NA	NA	NA	NA
+233578004	Continuous hemodialysis	NA	NA	NA	NA	NA	NA	NA	NA	NA
+233579007	Continuous arteriovenous hemodialysis	NA	NA	NA	NA	NA	NA	NA	NA	NA
+233580005	Continuous venovenous hemodialysis	NA	NA	NA	NA	NA	NA	NA	NA	NA
+233581009	Hemofiltration	349998013	Haemofiltration	600	7L1A3	7L1A300	Haemofiltration	349998013	NA	32
+233583007	Continuous hemofiltration	NA	NA	NA	NA	NA	NA	NA	NA	NA
+233584001	Continuous arteriovenous hemofiltration	NA	NA	NA	NA	NA	NA	NA	NA	NA
+233585000	Continuous venovenous hemofiltration	5053041000006110	Continuous venovenous haemofiltration	2	^ESCTCO505304		Continuous venovenous haemofiltration	350016013	NA	31
+233586004	Hemodiafiltration	NA	NA	NA	NA	NA	NA	NA	NA	NA
+233588003	Continuous hemodiafiltration	NA	NA	NA	NA	NA	NA	NA	NA	NA
+233589006	Continuous arteriovenous hemodiafiltration	NA	NA	NA	NA	NA	NA	NA	NA	NA
+233590002	Continuous venovenous hemodiafiltration	NA	NA	NA	NA	NA	NA	NA	NA	NA
+236370003	Nephropathy, unspecified	NA	NA	NA	NA	NA	NA	NA	NA	NA
+236387001	Mixed membranous and proliferative glomerulonephritis NEC	NA	NA	NA	NA	NA	NA	NA	NA	NA
+236414001	Membranous glomerulonephritis - stage II	NA	NA	NA	NA	NA	NA	NA	NA	NA
+236415000	Membranous glomerulonephritis - stage III	NA	NA	NA	NA	NA	NA	NA	NA	NA
+236417008	Membranous glomerulonephritis stage V	NA	NA	NA	NA	NA	NA	NA	NA	NA
+236423003	Renal impairment	354406016	Renal impairment	200000	K060	K060.00	Renal impairment	354406016	NA	32
+236423003	Renal impairment	354407013	Impaired renal function	70000	K060-1	K060.11	Impaired renal function	354407013	NA	32
+236423003	Renal impairment	5094031000006110	Renal dysfunction	20	^ESCTRE509403		Renal dysfunction	3013972011	NA	32
+236452000	Chronic drug-induced tubulointerstitial nephritis	5094341000006115	Chronic drug-induced tubulointerstitial nephritis	1	^ESCTCH509434		Chronic drug-induced tubulointerstitial nephritis	354440016	NA	5
+236515002	Acute toxic nephropathy	NA	NA	NA	NA	NA	NA	NA	NA	NA
+236523000	Chronic toxic interstitial nephritis	NA	NA	NA	NA	NA	NA	NA	NA	NA
+244941000000000	Abnormal renal tubular function	NA	NA	NA	NA	NA	NA	NA	NA	NA
+266550004	Nephritis and nephropathy unspecified	NA	NA	NA	NA	NA	NA	NA	NA	NA
+266615001	(Nephritis NOS) or (Bright's disease)	NA	NA	NA	NA	NA	NA	NA	NA	NA
+266617009	(Nephritis &/or nephrosis NOS) or (glomerulosclerosis) or (renal osteodystrophy)	NA	NA	NA	NA	NA	NA	NA	NA	NA
+266901000000000	Haemofiltration	NA	NA	NA	NA	NA	NA	NA	NA	NA
+268406008	Kidney needle biopsy (& percutaneous)	NA	NA	NA	NA	NA	NA	NA	NA	NA
+274326000	Percutaneous renal needle biopsy	5562171000006117	Percutaneous renal needle biopsy	40	^ESCTPE556217		Percutaneous renal needle biopsy	410110016	NA	31
+274554006	[EDTA] Membranous nephropathy associated with renal failure	NA	NA	NA	NA	NA	NA	NA	NA	NA
+274594008	[EDTA] Nephropathy caused by other specified drug associated with renal failure	NA	NA	NA	NA	NA	NA	NA	NA	NA
+275155009	Needle biopsy of kidney	5570041000006116	Needle biopsy of kidney	7	^ESCTNE557004		Needle biopsy of kidney	2694779019	NA	31
+27893002	Chronic drug-induced tubulointerstitial nephritis	NA	NA	NA	NA	NA	NA	NA	NA	NA
+28191000000000	Chronic nephritic syndrome with membranous glomerulonephritis	NA	NA	NA	NA	NA	NA	NA	NA	NA
+285280005	[EDTA] Tubulo-interstitial nephritis (not pyelonephritis) associated with renal failure	NA	NA	NA	NA	NA	NA	NA	NA	NA
+292763000	Hemofiltration solution adverse reaction	NA	NA	NA	NA	NA	NA	NA	NA	NA
+294302005	Hemofiltration solution allergy	NA	NA	NA	NA	NA	NA	NA	NA	NA
+30105008	Acute renal failure diet	NA	NA	NA	NA	NA	NA	NA	NA	NA
+307532008	Acute-on-chronic renal impairment	NA	NA	NA	NA	NA	NA	NA	NA	NA
+309269002	Kidney biopsy specimen	5986751000006115	Kidney biopsy sample	50	^ESCTKI598675		Kidney biopsy sample	452638017	NA	31
+341939001	Extracorporeal hemofiltration	NA	NA	NA	NA	NA	NA	NA	NA	NA
+349357005	Hemofiltration solution	NA	NA	NA	NA	NA	NA	NA	NA	NA
+350301000000000	Biopsy of kidney using ultrasound guidance	NA	NA	NA	NA	NA	NA	NA	NA	NA
+35455006	Acute tubular necrosis	481693017	Acute tubular necrosis	400	K040-1	K040.11	Acute tubular necrosis	59152019	NA	32
+35455006	Acute tubular necrosis	3071081000006111	Acute tubule necrosis	1	^ESCTAC307108		Acute tubule necrosis	197152016	NA	32
+358265009	Potassium free hemofiltration solution	NA	NA	NA	NA	NA	NA	NA	NA	NA
+358266005	Glucose free hemofiltration solution	NA	NA	NA	NA	NA	NA	NA	NA	NA
+358267001	Acetate containing hemofiltration solution	NA	NA	NA	NA	NA	NA	NA	NA	NA
+358357009	Acetate free hemofiltration solution	NA	NA	NA	NA	NA	NA	NA	NA	NA
+358358004	Lactate free hemofiltration solution	NA	NA	NA	NA	NA	NA	NA	NA	NA
+366101000000000	Temporary peritoneal dialysis catheter in situ	NA	NA	NA	NA	NA	NA	NA	NA	NA
+371019009	Azotemia due to intrarenal disease	NA	NA	NA	NA	NA	NA	NA	NA	NA
+385239002	Hemofiltration solution	NA	NA	NA	NA	NA	NA	NA	NA	NA
+39539005	Abnormal renal function	3136131000006110	Abnormal renal function	2	^ESCTAB313613		Abnormal renal function	66316010	NA	31
+401801000000000	[X]Other specified renal tubulo-interstitial diseases	NA	NA	NA	NA	NA	NA	NA	NA	NA
+408071000000000	Percutaneous needle biopsy of kidney using ultrasonographic guidance	NA	NA	NA	NA	NA	NA	NA	NA	NA
+411781000000000	[X]Other acute renal failure	NA	NA	NA	NA	NA	NA	NA	NA	NA
+419174006	Ultrasound scan and biopsy of kidney	1673211000006110	US scan and biopsy of kidney	800	EMISNQUS23		US scan and biopsy of kidney	2578601011	NA	32
+419174006	Ultrasound scan and biopsy of kidney	6933091000006112	Ultrasound scan and biopsy of kidney	2	^ESCTUL693309		Ultrasound scan and biopsy of kidney	2580684010	NA	32
+419300007	Hemofiltration solution	NA	NA	NA	NA	NA	NA	NA	NA	NA
+424188009	Idiopathic interstitial tubulonephritis	NA	NA	NA	NA	NA	NA	NA	NA	NA
+424211001	Solution for hemofiltration	NA	NA	NA	NA	NA	NA	NA	NA	NA
+430535006	Acute renal failure with oliguria	NA	NA	NA	NA	NA	NA	NA	NA	NA
+438813007	Biopsy of kidney using ultrasound guidance	7214431000006112	Biopsy of kidney using ultrasound guidance	6	^ESCTBI721443		Biopsy of kidney using ultrasound guidance	2791119017	NA	31
+440926006	Temporary peritoneal dialysis catheter in situ	NA	NA	NA	NA	NA	NA	NA	NA	NA
+453471000000000	Tubulo-interstitial nephritis (not pyelonephritis) associated with renal failure - European Dialysis and Transplant Association	NA	NA	NA	NA	NA	NA	NA	NA	NA
+453491000000000	Membranous nephropathy associated with renal failure - European Dialysis and Transplant Association	NA	NA	NA	NA	NA	NA	NA	NA	NA
+455981000000000	[X]Tubulo-interstitial nephritis, not specified as acute or chronic	NA	NA	NA	NA	NA	NA	NA	NA	NA
+463120006	Peritoneal dialysis catheter, acute	NA	NA	NA	NA	NA	NA	NA	NA	NA
+463140004	Hemofiltration system	NA	NA	NA	NA	NA	NA	NA	NA	NA
+467241000000000	[X]Other chronic tubulo-interstitial nephritis	NA	NA	NA	NA	NA	NA	NA	NA	NA
+479151000000000	[X]Tubulo-interstitial nephritis, not specified as acute or chronic	NA	NA	NA	NA	NA	NA	NA	NA	NA
+48426002	Fine needle biopsy of kidney	NA	NA	NA	NA	NA	NA	NA	NA	NA
+501221000000000	[D]Renal function test abnormal	NA	NA	NA	NA	NA	NA	NA	NA	NA
+50411000000000	Secondary tubulointerstitial nephritis	NA	NA	NA	NA	NA	NA	NA	NA	NA
+519501000000000	Nephropathy induced by aminoglycoside	NA	NA	NA	NA	NA	NA	NA	NA	NA
+519511000000000	Nephropathy induced by amphotericin	NA	NA	NA	NA	NA	NA	NA	NA	NA
+58574008	Acute nephropathy	NA	NA	NA	NA	NA	NA	NA	NA	NA
+60926001	Chronic tubulointerstitial nephritis	305172012	[X]Other chronic tubulo-interstitial nephritis	300	Kyu10	Kyu1000	[X]Other chronic tubulo-interstitial nephritis	101225013	NA	32
+60926001	Chronic tubulointerstitial nephritis	3489751000006115	Chronic interstitial nephritis	80	^ESCTCH348975		Chronic interstitial nephritis	101225013	NA	32
+60926001	Chronic tubulointerstitial nephritis	3489771000006113	Chronic tubulointerstitial nephritis	5	^ESCTCH348977		Chronic tubulointerstitial nephritis	101230012	NA	32
+60926001	Chronic tubulointerstitial nephritis	3489791000006114	Chronic tubulo-interstitial nephritis	10	^ESCTCH348979		Chronic tubulo-interstitial nephritis	1232150011	NA	32
+60926001	Chronic tubulointerstitial nephritis	3489801000006110	CIN - Chronic interstitial nephritis	9	^ESCTCI348980		CIN - Chronic interstitial nephritis	1232151010	NA	32
+610521000000000	Other acute renal failure	NA	NA	NA	NA	NA	NA	NA	NA	NA
+610531000000000	Acute renal failure NOS	NA	NA	NA	NA	NA	NA	NA	NA	NA
+612901000000000	Membranous nephritis unspecified	NA	NA	NA	NA	NA	NA	NA	NA	NA
+620361000000000	Nephropathy induced by other drugs, medicaments and biological substances	NA	NA	NA	NA	NA	NA	NA	NA	NA
+640901000000000	Nephritis and nephropathy unspecified	NA	NA	NA	NA	NA	NA	NA	NA	NA
+682481000000000	Nephropathy, unspecified	NA	NA	NA	NA	NA	NA	NA	NA	NA
+687381000000000	Mixed membranous and proliferative glomerulonephritis NEC	NA	NA	NA	NA	NA	NA	NA	NA	NA
+702718005	Acute on chronic tubulointerstitial nephritis	NA	NA	NA	NA	NA	NA	NA	NA	NA
+704055002	Nephropathy caused by amphotericin	NA	NA	NA	NA	NA	NA	NA	NA	NA
+704206001	Nephropathy caused by aminoglycoside	NA	NA	NA	NA	NA	NA	NA	NA	NA
+708688004	Percutaneous fine needle aspiration biopsy of kidney using imaging guidance	NA	NA	NA	NA	NA	NA	NA	NA	NA
+708930002	Maintenance hemodiafiltration	NA	NA	NA	NA	NA	NA	NA	NA	NA
+708933000	Emergency hemodiafiltration	NA	NA	NA	NA	NA	NA	NA	NA	NA
+708934006	Maintenance hemofiltration	NA	NA	NA	NA	NA	NA	NA	NA	NA
+714749008	Continuous renal replacement therapy	7723851000006119	Continuous renal replacement therapy	1	^ESCTCO772385		Continuous renal replacement therapy	3300117019	NA	31
+714821006	Recurrent hematuria co-occurrent and due to diffuse membranous glomerulonephritis	189141000006114	Recurrent haematuria co-occurrent and due to diffuse membranous glomerulonephritis	30	K0A22	K0A2200	Recurrent haematuria co-occurrent and due to diffuse membranous glomerulonephritis	3300544018	NA	32
+714822004	Persistent hematuria co-occurrent and due to diffuse membranous glomerulonephritis	NA	NA	NA	NA	NA	NA	NA	NA	NA
+715743002	Emergency hemofiltration	NA	NA	NA	NA	NA	NA	NA	NA	NA
+719025001	Kidney biopsy result abnormal	7780541000006116	Renal biopsy result abnormal	1	^ESCTRE778054		Renal biopsy result abnormal	3314716017	NA	31
+719033000	Evaluation of kidney biopsy specimen	NA	NA	NA	NA	NA	NA	NA	NA	NA
+719341006	Kidney biopsy result borderline abnormal	NA	NA	NA	NA	NA	NA	NA	NA	NA
+720706000	Insufficient histological evidence from kidney biopsy for diagnosis	NA	NA	NA	NA	NA	NA	NA	NA	NA
+722120008	Membranous glomerulonephritis caused by drug	NA	NA	NA	NA	NA	NA	NA	NA	NA
+723066005	Kidney biopsy result normal	NA	NA	NA	NA	NA	NA	NA	NA	NA
+723189000	Acute renal insufficiency	7841561000006115	Acute renal insufficiency	2	^ESCTAC784156		Acute renal insufficiency	3334973015	NA	31
+7246002	Kidney biopsy	2615221000006111	Kidney biopsy	30	^ESCTKI261522		Kidney biopsy	12955016	NA	31
+7246002	Kidney biopsy	2615231000006114	Renal biopsy	70	^ESCTRE261523		Renal biopsy	12958019	NA	31
+733139004	Acute kidney failure stage 3	7954351000006118	Acute kidney failure stage 3	9	^ESCTAC795435		Acute kidney failure stage 3	3498845011	NA	31
+733139004	Acute kidney failure stage 3	7954361000006116	Acute renal failure stage 3	1	^ESCTAC795436		Acute renal failure stage 3	3498843016	NA	31
+76114004	Decreased renal function	3738091000006117	Decreased renal function	2	^ESCTDE373809		Decreased renal function	126416014	NA	31
+76114004	Decreased renal function	3738101000006111	Decreased kidney function	9	^ESCTDE373810		Decreased kidney function	3013823015	NA	31
+767094002	Disorder of renal parenchyma	12051921000006118	Disorder of renal parenchyma	1	^ESCT1205192		Disorder of renal parenchyma	3664193011	NA	31
+767094002	Disorder of renal parenchyma	12051941000006113	Renal parenchymal disease	2	^ESCT1205194		Renal parenchymal disease	3664195016	NA	31
+769246001	Closed biopsy of kidney	12086361000006113	Closed biopsy of kidney	1	^ESCT1208636		Closed biopsy of kidney	3690559018	NA	31
+82112005	Idiopathic chronic tubulointerstitial nephritis	NA	NA	NA	NA	NA	NA	NA	NA	NA
+83096004	Decreased renal clearance	NA	NA	NA	NA	NA	NA	NA	NA	NA
+834921000000000	Acute drug-induced interstitial nephritis	NA	NA	NA	NA	NA	NA	NA	NA	NA
+835001000000000	Acute idiopathic interstitial nephritis	NA	NA	NA	NA	NA	NA	NA	NA	NA
+840371000000000	Acute renal failure induced by aminoglycoside	NA	NA	NA	NA	NA	NA	NA	NA	NA
+840381000000000	Acute renal failure due to aminoglycoside	NA	NA	NA	NA	NA	NA	NA	NA	NA
+857561000000000	Nephrotoxic acute renal failure	NA	NA	NA	NA	NA	NA	NA	NA	NA
+867581000000000	Acute kidney injury stage 1	NA	NA	NA	NA	NA	NA	NA	NA	NA
+867591000000000	Acute kidney injury stage 1	NA	NA	NA	NA	NA	NA	NA	NA	NA
+867601000000000	Acute kidney injury stage 2	NA	NA	NA	NA	NA	NA	NA	NA	NA
+867611000000000	Acute kidney injury stage 2	NA	NA	NA	NA	NA	NA	NA	NA	NA
+867621000000000	Acute kidney injury stage 3	NA	NA	NA	NA	NA	NA	NA	NA	NA
+867631000000000	Acute kidney injury stage 3	NA	NA	NA	NA	NA	NA	NA	NA	NA
+932201000000000	Acute kidney injury warning stage	NA	NA	NA	NA	NA	NA	NA	NA	NA
+932211000000000	Acute kidney injury warning stage	NA	NA	NA	NA	NA	NA	NA	NA	NA
+939541000000000	Provision of written information about acute kidney injury	NA	NA	NA	NA	NA	NA	NA	NA	NA
+95568003	Renal tubular disorder	NA	NA	NA	NA	NA	NA	NA	NA	NA

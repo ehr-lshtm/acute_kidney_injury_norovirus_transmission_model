@@ -1,0 +1,72 @@
+group	icd	description
+Acute Kidney Injury	N17.0	Acute renal failure with tubular necrosis
+Acute Kidney Injury	N17.1	Acute renal failure with acute cortical necrosis
+Acute Kidney Injury	N17.2	Acute renal failure with medullary necrosis
+Acute Kidney Injury	N17.8	Other acute renal failure
+Acute Kidney Injury	N17.9	"Acute renal failure, unspecified"
+Acute Kidney Injury	N19	Unspecified kidney failure
+Gastrointestinal infectious and non-infectious illnesses	A00.0	"Cholera due to Vibrio cholerae 01, biovar cholerae"
+Gastrointestinal infectious and non-infectious illnesses	A00.1	"Cholera due to Vibrio cholerae 01, biovar eltor"
+Gastrointestinal infectious and non-infectious illnesses	A00.9	"Cholera, unspecified"
+Gastrointestinal infectious and non-infectious illnesses	A01.0	Typhoid fever
+Gastrointestinal infectious and non-infectious illnesses	A01.1	Paratyphoid fever A
+Gastrointestinal infectious and non-infectious illnesses	A01.2	Paratyphoid fever B
+Gastrointestinal infectious and non-infectious illnesses	A01.3	Paratyphoid fever C
+Gastrointestinal infectious and non-infectious illnesses	A01.4	"Paratyphoid fever, unspecified"
+Gastrointestinal infectious and non-infectious illnesses	A02.0	Salmonella enteritis
+Gastrointestinal infectious and non-infectious illnesses	A02.1	Salmonella sepsis
+Gastrointestinal infectious and non-infectious illnesses	A02.2	Localized salmonella infections
+Gastrointestinal infectious and non-infectious illnesses	A02.8	Other specified salmonella infections
+Gastrointestinal infectious and non-infectious illnesses	A02.9	"Salmonella infection, unspecified"
+Gastrointestinal infectious and non-infectious illnesses	A03.0	Shigellosis due to Shigella dysenteriae
+Gastrointestinal infectious and non-infectious illnesses	A03.1	Shigellosis due to Shigella flexneri
+Gastrointestinal infectious and non-infectious illnesses	A03.2	Shigellosis due to Shigella boydii
+Gastrointestinal infectious and non-infectious illnesses	A03.3	Shigellosis due to Shigella sonnei
+Gastrointestinal infectious and non-infectious illnesses	A03.8	Other shigellosis
+Gastrointestinal infectious and non-infectious illnesses	A03.9	"Shigellosis, unspecified"
+Gastrointestinal infectious and non-infectious illnesses	A04.0	Enteropathogenic Escherichia coli infection
+Gastrointestinal infectious and non-infectious illnesses	A04.1	Enterotoxigenic Escherichia coli infection
+Gastrointestinal infectious and non-infectious illnesses	A04.2	Enteroinvasive Escherichia coli infection
+Gastrointestinal infectious and non-infectious illnesses	A04.3	Enterohaemorrhagic Escherichia coli infection
+Gastrointestinal infectious and non-infectious illnesses	A04.4	Other intestinal Escherichia coli infections
+Gastrointestinal infectious and non-infectious illnesses	A04.5	Campylobacter enteritis
+Gastrointestinal infectious and non-infectious illnesses	A04.6	Enteritis due to Yersinia enterocolitica
+Gastrointestinal infectious and non-infectious illnesses	A04.7	Enterocolitis due to Clostridium difficile
+Gastrointestinal infectious and non-infectious illnesses	A04.8	Other specified bacterial intestinal infections
+Gastrointestinal infectious and non-infectious illnesses	A04.9	"Bacterial intestinal infection, unspecified"
+Gastrointestinal infectious and non-infectious illnesses	A05.0	"Other bacterial foodborne intoxications, not elsewhere classified"
+Gastrointestinal infectious and non-infectious illnesses	A05.1	Botulism
+Gastrointestinal infectious and non-infectious illnesses	A05.2	Foodborne Clostridium perfringens [Clostridium welchii] intoxication
+Gastrointestinal infectious and non-infectious illnesses	A05.3	Foodborne Vibrio parahaemolyticus intoxication
+Gastrointestinal infectious and non-infectious illnesses	A05.4	Foodborne Bacillus cereus intoxication
+Gastrointestinal infectious and non-infectious illnesses	A05.8	Other specified bacterial foodborne intoxications
+Gastrointestinal infectious and non-infectious illnesses	A05.9	"Bacterial foodborne intoxication, unspecified"
+Gastrointestinal infectious and non-infectious illnesses	A06.0	Acute amoebic dysentery
+Gastrointestinal infectious and non-infectious illnesses	A06.1	Chronic intestinal amoebiasis
+Gastrointestinal infectious and non-infectious illnesses	A06.2	Amoebic nondysenteric colitis
+Gastrointestinal infectious and non-infectious illnesses	A06.3	Amoeboma of intestine
+Gastrointestinal infectious and non-infectious illnesses	A06.4	Amoebic liver abscess (K77.0*)
+Gastrointestinal infectious and non-infectious illnesses	A06.5	Amoebic lung abscess (J99.8*)
+Gastrointestinal infectious and non-infectious illnesses	A06.6	Amoebic brain abscess (G07*)
+Gastrointestinal infectious and non-infectious illnesses	A06.7	Cutaneous amoebiasis
+Gastrointestinal infectious and non-infectious illnesses	A06.8	Amoebic infection of other sites
+Gastrointestinal infectious and non-infectious illnesses	A06.9	"Amoebiasis, unspecified"
+Gastrointestinal infectious and non-infectious illnesses	A07.0	Balantidiasis
+Gastrointestinal infectious and non-infectious illnesses	A07.1	Giardiasis [lambliasis]
+Gastrointestinal infectious and non-infectious illnesses	A07.2	Cryptosporidiosis
+Gastrointestinal infectious and non-infectious illnesses	A07.3	Isosporiasis
+Gastrointestinal infectious and non-infectious illnesses	A07.8	Other specified protozoal intestinal diseases
+Gastrointestinal infectious and non-infectious illnesses	A07.9	"Protozoal intestinal disease, unspecified"
+Gastrointestinal infectious and non-infectious illnesses	A08.0	Rotaviral enteritis
+Gastrointestinal infectious and non-infectious illnesses	A08.1	Acute gastroenteropathy due to Norwalk agent
+Gastrointestinal infectious and non-infectious illnesses	A08.2	Adenoviral enteritis
+Gastrointestinal infectious and non-infectious illnesses	A08.3	Other viral enteritis
+Gastrointestinal infectious and non-infectious illnesses	A08.4	"Viral intestinal infection, unspecified"
+Gastrointestinal infectious and non-infectious illnesses	A08.5	Other specified intestinal infections
+Gastrointestinal infectious and non-infectious illnesses	A09	Other gastroenteritis and colitis of infectious and unspecified origin
+Gastrointestinal infectious and non-infectious illnesses	A09.0	Other and unspecified gastroenteritis and colitis of infectious origin
+Gastrointestinal infectious and non-infectious illnesses	A09.9	Gastroenteritis and colitis of unspecified origin
+Gastrointestinal infectious and non-infectious illnesses	K52.8	Other specified noninfective gastroenteritis and colitis
+Gastrointestinal infectious and non-infectious illnesses	K52.9	"Noninfective gastroenteritis and colitis, unspecified"
+Gastrointestinal infectious and non-infectious illnesses	R11	Nausea and vomiting
+Gastrointestinal infectious and non-infectious illnesses	R19.7	"Diarrhea, unspecified"
