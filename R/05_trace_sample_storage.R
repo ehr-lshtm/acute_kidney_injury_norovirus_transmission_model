@@ -70,7 +70,7 @@ starting.value <-
     surveillance_report_4_winter = 0.026, 
     season_amp = 2.5, 
     season_offset = 15, 
-    aki_hospitalisation_4 = log(0.05), 
+    aki_hospitalisation_4 = log(0.25), 
     gastro_hospitalisation_4 = log(0.05), 
     gastro_gp_attend_1 = log(0.4),
     gastro_gp_attend_2 = log(0.35), 
@@ -85,21 +85,21 @@ prop.sd <-
   c(
     # season_amp_over65 = 0.01, 
     sigma = 0.0015,
-    surveillance_report_1_summer = 0.00002,
-    surveillance_report_1_winter = 0.00002,
-    surveillance_report_2_summer = 0.00001,
-    surveillance_report_2_winter = 0.00001,
-    surveillance_report_3_summer = 0.00001,
-    surveillance_report_3_winter = 0.00001,
-    surveillance_report_4_summer = 0.00002,
-    surveillance_report_4_winter = 0.00002,
+    surveillance_report_1_summer = 0.00005,
+    surveillance_report_1_winter = 0.00005,
+    surveillance_report_2_summer = 0.00005,
+    surveillance_report_2_winter = 0.00005,
+    surveillance_report_3_summer = 0.00005,
+    surveillance_report_3_winter = 0.00005,
+    surveillance_report_4_summer = 0.0004,
+    surveillance_report_4_winter = 0.0004,
     season_amp = 0.02,
     season_offset = 0.1, 
-    aki_hospitalisation_4 = 0.095, 
-    gastro_hospitalisation_4 = 0.095, 
-    gastro_gp_attend_1 = 0.005, 
-    gastro_gp_attend_2 = 0.002, 
-    D_immun = 0.15, 
+    aki_hospitalisation_4 = 0.05, #0.095, 
+    gastro_hospitalisation_4 = 0.05, #0.095, 
+    gastro_gp_attend_1 = 0.01, #0.005, 
+    gastro_gp_attend_2 = 0.004, #0.002, 
+    D_immun = 0.3, #0.15, 
     probT_under5 = 0.012, 
     probT_over5 = 0.015
   )
@@ -140,7 +140,7 @@ upper <- c(
   surveillance_report_4_winter = 0.06,
   season_amp = 10,
   season_offset = 50,
-  aki_hospitalisation_4 = log(0.75), # bound so that transformed value is no higher than 0.5
+  aki_hospitalisation_4 = log(0.5), # bound so that transformed value is no higher than 0.5
   gastro_hospitalisation_4 = log(0.5), # bound so that transformed value is no higher than 0.4
   gastro_gp_attend_1 = log(0.5), # bound so that transformed value is no higher than 0.5
   gastro_gp_attend_2 = log(0.5), # bound so that transformed value is no higher than 0.5

@@ -53,7 +53,7 @@ xyplot( x = log_density_trace)
 
 #' ## trace without burn in
 
-burn_value <- 1000
+burn_value <- 10000
 
 traceBurn <- burnAndThin(my_trace, burn = burn_value)
 
@@ -81,7 +81,7 @@ acfplot(x = traceBurn, lag.max = 60)
 
 #' ## thinned trace
 
-thin_factor <- 10
+thin_factor <- 100
 
 traceBurnThin <- burnAndThin(my_trace, burn = burn_value, thin = thin_factor)
 traceBurnThin_df <- burnAndThin(my_trace_df, burn = burn_value, thin = thin_factor)
