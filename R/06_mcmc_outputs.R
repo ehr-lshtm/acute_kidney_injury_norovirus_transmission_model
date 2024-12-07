@@ -53,7 +53,7 @@ xyplot( x = log_density_trace)
 
 #' ## trace without burn in
 
-burn_value <- 50000
+burn_value <- 1000
 
 traceBurn <- burnAndThin(my_trace, burn = burn_value)
 
@@ -81,7 +81,7 @@ acfplot(x = traceBurn, lag.max = 60)
 
 #' ## thinned trace
 
-thin_factor <- 50
+thin_factor <- 10
 
 traceBurnThin <- burnAndThin(my_trace, burn = burn_value, thin = thin_factor)
 traceBurnThin_df <- burnAndThin(my_trace_df, burn = burn_value, thin = thin_factor)
@@ -109,7 +109,11 @@ traceBurn_df_aki <- traceBurn_df |>
 traceBurnThin_df_aki <- traceBurnThin_df |> 
   select(aki_hospitalisation_4) |> 
   rename('Norovirus linked AKI hospitalisation' = aki_hospitalisation_4)
-  
+
+source("R/create_prior_distributions.R")
+
+plotPosteriorDensity(trace = traceBurnThin_df, prior = prior_df)
+
 #' ## correlation
 
 levelplot(traceBurnThin, col.regions = heat.colors(100), scales=list(x=list(rot=90)))
@@ -120,14 +124,14 @@ mcmc_pairs(
     "sigma",
     "season_amp",
     "season_offset",
-    "season_amp_over65",
     "D_immun",
     "probT_under5",
     "probT_over5",
     "surveillance_report_1",
     "surveillance_report_2",
     "surveillance_report_3",
-    "surveillance_report_4",
+    "surveillance_report_4_winter",
+    "surveillance_report_4_summer",
     "aki_hospitalisation_4",
     "gastro_hospitalisation_4",
     "gastro_gp_attend_1",
@@ -153,12 +157,13 @@ posterior_table <- data.frame(theta = theta,
                               q2.5 = q2.5,
                               q97.5 = q97.5)
 rownames(posterior_table) <- c(
-  "season_amp_over65",
+  # "season_amp_over65",
   "sigma",
   "surveillance_report_1",
   "surveillance_report_2",
   "surveillance_report_3",
-  "surveillance_report_4",
+  "surveillance_report_4_winter",
+  "surveillance_report_4_summer",
   "season_amp",
   "season_offset",
   "aki_hospitalisation_4",
@@ -189,9 +194,24 @@ posterior_table <- posterior_table %>%
                   ))) |> 
   select(Parameter, theta, q2.5, q97.5)
 
-parameter_order <- c("sigma", "D_immun", "probT_under5", "probT_over5",  "season_amp", "season_amp_over65", "season_offset", 
-                     "aki_hospitalisation_4", "gastro_hospitalisation_4", "surveillance_report_1", "surveillance_report_2", 
-                     "surveillance_report_3", "surveillance_report_4", "gastro_gp_attend_1", "gastro_gp_attend_2")
+parameter_order <- c(
+  "sigma",
+  "D_immun",
+  "probT_under5",
+  "probT_over5",
+  "season_amp",
+  # "season_amp_over65",
+  "season_offset",
+  "aki_hospitalisation_4",
+  "gastro_hospitalisation_4",
+  "surveillance_report_1",
+  "surveillance_report_2",
+  "surveillance_report_3",
+  "surveillance_report_4_winter",
+  "surveillance_report_4_summer",
+  "gastro_gp_attend_1",
+  "gastro_gp_attend_2"
+)
 
 posterior_table_image <- posterior_table |> 
   mutate(theta = signif(theta, digits = 3),
@@ -207,10 +227,11 @@ posterior_table_image <- posterior_table |>
     Parameter == "surveillance_report_1" ~ "Proportion of symptomatic norovirus in 0-4 year olds reported to surveillance",
     Parameter == "surveillance_report_2" ~ "Proportion of symptomatic norovirus in 5-14 year olds reported to surveillance",
     Parameter == "surveillance_report_3" ~ "Proportion of symptomatic norovirus in 15-64 year olds reported to surveillance",
-    Parameter == "surveillance_report_4" ~ "Proportion of symptomatic norovirus in over 65s reported to surveillance",
+    Parameter == "surveillance_report_4_winter" ~ "Proportion of symptomatic norovirus in over 65s reported to surveillance in the winter",
+    Parameter == "surveillance_report_4_summer" ~ "Proportion of symptomatic norovirus in over 65s reported to surveillance in the summer",
     Parameter == "season_amp" ~ "A term forcing the amplitude of the periodicity in the contact rate",
     Parameter == "season_offset" ~ "A term forcing the timing of the periodicity in the contact rate",
-    Parameter == "season_amp_over65" ~ "Scaling seasonal amplitude for over 65 seasonality to improve fit",
+    # Parameter == "season_amp_over65" ~ "Scaling seasonal amplitude for over 65 seasonality to improve fit",
     Parameter == "probT_under5" ~ "Probability of transmission in under 5s transmitting to under 5s",
     Parameter == "probT_over5" ~ "Probability of transmission transmitting to over 5s",
     Parameter == "aki_hospitalisation_4" ~ "Proportion of symptomatic norovirus infections linked to an AKI hospitalisation in over 65s",
@@ -223,10 +244,11 @@ posterior_table_image <- posterior_table |>
     Parameter == "surveillance_report_1" ~ "Underreporting to surveillance 0-4",
     Parameter == "surveillance_report_2" ~ "Underreporting to surveillance 5-14",
     Parameter == "surveillance_report_3" ~ "Underreporting to surveillance 15-64",
-    Parameter == "surveillance_report_4" ~ "Underreporting to surveillance 65+",
+    Parameter == "surveillance_report_4_winter" ~ "Underreporting to surveillance 65+ in the winter",
+    Parameter == "surveillance_report_4_summer" ~ "Underreporting to surveillance 65+ in the summer",
     Parameter == "season_amp" ~ "Seasonal amplitude term",
     Parameter == "season_offset" ~ "Seasonal offset term",
-    Parameter == "season_amp_over65" ~ "Scaling seasonal amplitude for over 65",
+    # Parameter == "season_amp_over65" ~ "Scaling seasonal amplitude for over 65",
     Parameter == "probT_under5" ~ "Probability of infection between under 5s",
     Parameter == "probT_over5" ~ "Probability of infection to over 5s",
     Parameter == "aki_hospitalisation_4" ~ "Norovirus associated AKI hospitalisation in 65+",
@@ -251,15 +273,23 @@ posterior_table_image <- posterior_table |>
   
 posterior_table_image
 
-save_as_image(posterior_table_image, path = "figures/posterior_table.png")
+# save_as_image(posterior_table_image, path = "figures/posterior_table.png")
 
-summary_stats
+#summary_stats
 theta <- as.list(theta)
-par
+#par
 
 times <- 11000
 traj_median <- simulate(parameters = c(theta, par), init.state = init_matrix, times)
 age_incidence_median <- simulate(parameters = c(theta, par), init.state = init_matrix, times, age.incidence = TRUE)
+
+traj_median |>
+  left_join(observation_data |> select(time, week_date, aki_hosp_obs_4), by = "time") |>
+  filter(time < 364) |>
+  ggplot(aes(x = week_date)) +
+  geom_point(aes(y = aki_hosp_obs_4, color = "Points"), size = 2, show.legend = FALSE) +
+  geom_line(aes(y = aki_hosp_model_4, linetype = "Model"), color = "red", show.legend = FALSE) +
+  theme_classic()
 
 total_noro_infections_65 <- traj_median |> 
   summarize(total_infectious_symp_4 = sum(infectious_symp_4_count))
@@ -292,530 +322,616 @@ noro_linked_aki/aki_total
 noro_linked_aki_min/aki_total
 noro_linked_aki_max/aki_total
 
-n_sample_trace <- nrow(traceBurnThin)
-source("R/replicates.R")
-traj_repli <- replicates(mcmc_trace = traceBurnThin, n_samples = n_sample_trace)
-# traj_repli <- replicates(mcmc_trace = my_trace, n_samples = 1000)
-traj_repli_age_group <- replicates_age_group(mcmc_trace = traceBurnThin, n_samples = n_sample_trace)
+# generate latin hypercube samples of posterior 
+# source("R/lhs_posterior.R")
+source("R/random_sample.R")
+# lhs_samples <- generate_lhs_samples(traceBurnThin, n_samples = 2000)
+random_samples <- generate_random_samples(traceBurnThin, n_samples = 100)
+lhs_samples <- random_samples
 
-traj_summary <- traj_repli |> 
-  group_by(time) |> 
-  mutate(
-    percentile_2.5_noro_1 = quantile(noro_model_1, probs = 0.025, na.rm = TRUE),
-         percentile_2.5_noro_2 = quantile(noro_model_2, probs = 0.025, na.rm = TRUE),
-         percentile_2.5_noro_3 = quantile(noro_model_3, probs = 0.025, na.rm = TRUE),
-         percentile_2.5_noro_4 = quantile(noro_model_4, probs = 0.025, na.rm = TRUE),
-         percentile_2.5_aki = quantile(aki_hosp_model_4, probs = 0.025, na.rm = TRUE),
-         percentile_2.5_gastro = quantile(gastro_hosp_model_4, probs = 0.025, na.rm = TRUE),
-         percentile_2.5_gastro_gp1 = quantile(gastro_gp_model_1 , probs = 0.025, na.rm = TRUE),
-         percentile_2.5_gastro_gp2 = quantile(gastro_gp_model_2 , probs = 0.025, na.rm = TRUE),
-         percentile_97.5_noro_1 = quantile(noro_model_1, probs = 0.975, na.rm = TRUE),
-         percentile_97.5_noro_2 = quantile(noro_model_2, probs = 0.975, na.rm = TRUE),
-         percentile_97.5_noro_3 = quantile(noro_model_3, probs = 0.975, na.rm = TRUE),
-         percentile_97.5_noro_4 = quantile(noro_model_4, probs = 0.975, na.rm = TRUE),
-         percentile_97.5_aki = quantile(aki_hosp_model_4, probs = 0.975, na.rm = TRUE),
-         percentile_97.5_gastro = quantile(gastro_hosp_model_4, probs = 0.975, na.rm = TRUE),
-         percentile_97.5_gastro_gp1 = quantile(gastro_gp_model_1 , probs = 0.975, na.rm = TRUE),
-         percentile_97.5_gastro_gp2 = quantile(gastro_gp_model_2 , probs = 0.975, na.rm = TRUE),
-         percentile_50_noro_1 = quantile(noro_model_1, probs = 0.50, na.rm = TRUE),
-         percentile_50_noro_2 = quantile(noro_model_2, probs = 0.50, na.rm = TRUE),
-         percentile_50_noro_3 = quantile(noro_model_3, probs = 0.50, na.rm = TRUE),
-         percentile_50_noro_4 = quantile(noro_model_4, probs = 0.50, na.rm = TRUE),
-         percentile_50_aki = quantile(aki_hosp_model_4, probs = 0.50, na.rm = TRUE),
-         percentile_50_gastro = quantile(aki_hosp_model_4, probs = 0.50, na.rm = TRUE),
-         percentile_50_gastro_gp1 = quantile(gastro_gp_model_1 , probs = 0.50, na.rm = TRUE),
-         percentile_50_gastro_gp2 = quantile(gastro_gp_model_2 , probs = 0.50, na.rm = TRUE)
-  ) |>
-  ungroup() |> 
-  filter(replicate == 1) |> 
-  select(
-    time,
-    percentile_2.5_noro_1,
-    percentile_2.5_noro_2,
-    percentile_2.5_noro_3,
-    percentile_2.5_noro_4,
-    percentile_2.5_aki,
-    percentile_2.5_gastro,
-    percentile_2.5_gastro_gp1,
-    percentile_2.5_gastro_gp2,
-    percentile_97.5_noro_1,
-    percentile_97.5_noro_2,
-    percentile_97.5_noro_3,
-    percentile_97.5_noro_4,
-    percentile_97.5_aki,
-    percentile_97.5_gastro,
-    percentile_97.5_gastro_gp1,
-    percentile_97.5_gastro_gp2,
-    percentile_50_noro_1,
-    percentile_50_noro_2,
-    percentile_50_noro_3,
-    percentile_50_noro_4,
-    percentile_50_aki,
-    percentile_50_gastro,
-    percentile_50_gastro_gp1,
-    percentile_50_gastro_gp2
-  )
+###
 
-traj_summary_noro_count_4 <- traj_repli |> 
-  group_by(time) |> 
-  mutate(
-    percentile_2.5_noro_4 = quantile(infectious_symp_4_count, probs = 0.025, na.rm = TRUE),
-    percentile_97.5_noro_4 = quantile(infectious_symp_4_count, probs = 0.975, na.rm = TRUE),
-    percentile_50_noro_4 = quantile(infectious_symp_4_count, probs = 0.50, na.rm = TRUE),
-  ) |>
-  ungroup() |> 
-  filter(replicate == 1) |> 
-  select(
-    time,
-    percentile_2.5_noro_4,
-    percentile_97.5_noro_4,
-    percentile_50_noro_4
-  ) |> 
+infectious_symp_4_trajectory <- generate_trajectories_with_uncertainty(lhs_samples, init.state, outcome = "infectious_symp_4_count")
+
+infectious_symp_4_quantiles_df <- data.frame(
+  time = 1:365,
+  median_traj = apply(infectious_symp_4_trajectory, 2, median),
+  ci_lower = apply(infectious_symp_4_trajectory, 2, quantile, 0.025),
+  ci_upper = apply(infectious_symp_4_trajectory, 2, quantile, 0.975)) |> 
   summarize(
-    percentile_2.5_noro_total = sum(percentile_2.5_noro_4),
-    percentile_97.5_noro_total = sum(percentile_97.5_noro_4),
-    percentile_50_noro_total = sum(percentile_50_noro_4)
+    percentile_2.5_noro_total = sum(ci_lower),
+    percentile_97.5_noro_total = sum(ci_upper),
+    percentile_50_noro_total = sum(median_traj)
   )
-
-traj_summary_noro_count_4
-
-traj_summary_age_group <- traj_repli_age_group |> 
-  group_by(age) |> 
-  mutate(percentile_2.5 = quantile(model_incidence, probs = 0.025, na.rm = TRUE),
-         percentile_97.5 = quantile(model_incidence, probs = 0.975, na.rm = TRUE),
-         percentile_50 = quantile(model_incidence, probs = 0.50, na.rm = TRUE),
-  ) |>
-  ungroup() |> 
-  filter(replicate == 1) |>
-  mutate(study = "model_incidence") |> 
-  select(age, study, percentile_2.5, percentile_97.5, percentile_50)
 
 ### age group incidence
 
-age_incidence_error <- age_incidence_median |> 
-  left_join(age_incidence) |> 
-  pivot_longer(cols = !age, names_to = "study", values_to = "value") |>
-  left_join(traj_summary_age_group, by = c("age", "study")) |>
-  mutate(age = factor(age, levels = c("0-4", "5-14", "15-64", "65+")),
-         study = factor(study, levels = c("model_incidence", "harris_incidence")),
-         percentile_2.5 = ifelse(is.na(percentile_2.5), case_when(
-           age == "0-4" & study == "harris_incidence" ~ 147.1,
-           age == "5-14" & study == "harris_incidence" ~ 40.1,
-           age == "15-64" & study == "harris_incidence" ~ 34.7,
-           age == "65+" & study == "harris_incidence" ~ 20.4,
-           TRUE ~ percentile_2.5), percentile_2.5),
-         percentile_97.5 = case_when(
-           age == "0-4" & study == "harris_incidence" ~ 266.5,
-           age == "5-14" & study == "harris_incidence" ~ 101.4,
-           age == "15-64" & study == "harris_incidence" ~ 58.2,
-           age == "65+" & study == "harris_incidence" ~ 45.3,
-           TRUE ~ percentile_97.5)
+process_age_group_incidence <- function(lhs_samples, init.state, age_group) {
+  # Generate incidence data for the age group
+  age_group_incidence <- generate_age_group_incidence_with_uncertainty(
+    lhs_samples, 
+    init.state, 
+    age_group
   )
+  
+  # Create data frame with summary statistics
+  data.frame(
+    time = 1:365,
+    median_traj = apply(age_group_incidence, 2, median),
+    ci_lower = apply(age_group_incidence, 2, quantile, 0.025),
+    ci_upper = apply(age_group_incidence, 2, quantile, 0.975)
+  ) |> 
+    summarize(
+      percentile_2.5_noro_total = sum(ci_lower)/365,
+      percentile_97.5_noro_total = sum(ci_upper)/365,
+      percentile_50_noro_total = sum(median_traj)/365
+    )
+    
+}
 
-incidence_fit <- age_incidence_median |> 
-  left_join(age_incidence) |>
-  pivot_longer(cols = !age, names_to = "study", values_to = "value") |>
-  mutate(age = factor(age, levels = c("0-4", "5-14", "15-64", "65+")),
-         study = factor(study, levels = c("model_incidence", "harris_incidence"))) |>
-  left_join(age_incidence_error |> select(age, study, percentile_2.5, percentile_97.5)) |>
-  mutate(age = factor(age, levels = c("0-4", "5-14", "15-64", "65+")),
-         study = case_when(
-           study == "model_incidence" ~ "Model (95% CrI)",
-           study == "harris_incidence" ~ "Harris et al. (95% CI)"
-         ),
-         study = factor(study, levels = c("Model (95% CrI)", "Harris et al. (95% CI)"))) |> 
+age_group_1_incidence <- process_age_group_incidence(lhs_samples, init.state, 1)
+age_group_2_incidence <- process_age_group_incidence(lhs_samples, init.state, 2)
+age_group_3_incidence <- process_age_group_incidence(lhs_samples, init.state, 3)
+age_group_4_incidence <- process_age_group_incidence(lhs_samples, init.state, 4)
+
+age_group_model_incidence <- age_group_1_incidence |> mutate(age_group = "0-4") |> 
+  bind_rows(age_group_2_incidence |> mutate(age_group = "5-14")) |>
+  bind_rows(age_group_3_incidence |> mutate(age_group = "15-64")) |>
+  bind_rows(age_group_4_incidence |> mutate(age_group = "65+")) |> 
+  mutate(study = "model_incidence")
+  
+age_group_harris_incidence <- age_incidence |> 
+  mutate(study = "harris_incidence",
+         percentile_2.5_noro_total = NA,
+         percentile_97.5_noro_total = NA) |>
+  rename(age_group = age, percentile_50_noro_total = harris_incidence)
+  
+incidence_fit <- age_group_model_incidence |>
+  rbind(age_group_harris_incidence) |>
+  rename(age = age_group,
+         percentile_2.5 = percentile_2.5_noro_total ,
+         percentile_97.5 = percentile_97.5_noro_total) |>
+  mutate(
+    age = factor(age, levels = c("0-4", "5-14", "15-64", "65+")),
+    study = factor(study, levels = c("model_incidence", "harris_incidence")),
+    percentile_2.5 = ifelse(
+      is.na(percentile_2.5),
+      case_when(
+        age == "0-4" & study == "harris_incidence" ~ 147.1,
+        age == "5-14" & study == "harris_incidence" ~ 40.1,
+        age == "15-64" & study == "harris_incidence" ~ 34.7,
+        age == "65+" & study == "harris_incidence" ~ 20.4,
+        TRUE ~ percentile_2.5
+      ),
+      percentile_2.5
+    ),
+    percentile_97.5 = case_when(
+      age == "0-4" & study == "harris_incidence" ~ 266.5,
+      age == "5-14" & study == "harris_incidence" ~ 101.4,
+      age == "15-64" & study == "harris_incidence" ~ 58.2,
+      age == "65+" & study == "harris_incidence" ~ 45.3,
+      TRUE ~ percentile_97.5
+    ),
+    study = case_when(
+      study == "model_incidence" ~ "Model (95% CrI)",
+      study == "harris_incidence" ~ "Harris et al. (95% CI)"
+    ),
+    study = factor(study, levels = c("Model (95% CrI)", "Harris et al. (95% CI)"))
+  )  |>
   ggplot() +
-  geom_bar(aes(x = age, y = value, fill = study), stat = "identity", position = "dodge") +
-  geom_errorbar(aes(x = age, y = value, ymin = percentile_2.5, ymax = percentile_97.5, group = study),
-                position = position_dodge(width = 0.9), width = 0.25) +
+  geom_bar(
+    aes(x = age, y = percentile_50_noro_total, fill = study),
+    stat = "identity",
+    position = "dodge"
+  ) +
+  geom_errorbar(
+    aes(
+      x = age,
+      y = percentile_50_noro_total,
+      ymin = percentile_2.5,
+      ymax = percentile_97.5,
+      group = study
+    ),
+    position = position_dodge(width = 0.9),
+    width = 0.25
+  ) +
   theme_classic() +
   xlab("Age group") +
   ylab("Incidence per 1000 p-yrs") +
-  guides(fill = guide_legend(title = NULL)) + 
-  ylim(c(0,300)) +
-  theme(axis.text=element_text(size=10),
-        axis.title=element_text(size=10),
-        legend.text = element_text(size = 10)) +
+  guides(fill = guide_legend(title = NULL)) +
+  ylim(c(0, 300)) +
+  theme(
+    axis.text = element_text(size = 10),
+    axis.title = element_text(size = 10),
+    legend.text = element_text(size = 10)
+  ) +
   scale_color_manual(values = cbbPalette)
 
-
+incidence_fit
 
 ## noro fit to observation data (model age 65+; observation data all ages)
 
-noro_1_fit_points <- traj_median |>
-  left_join(traj_summary |> select(time, percentile_2.5_noro_1, percentile_97.5_noro_1), by ="time") |>
-  left_join(observation_data, by = "time") |>
-  select(week_date, noro_model_1, percentile_2.5_noro_1, percentile_97.5_noro_1,  noro_obs_1) |>
-  ggplot(aes(x = week_date)) +
-  geom_point(aes(y = noro_obs_1, color = "Points"), size = 2, show.legend = FALSE) +
-  geom_line(aes(y = noro_model_1, linetype = "Model"), color = 'red', show.legend = FALSE) +
-  geom_ribbon(aes(ymin = percentile_2.5_noro_1, ymax = percentile_97.5_noro_1, fill = "Ribbon"), alpha = 0.5, show.legend = FALSE) +
-  theme_classic() +
-  scale_x_date(expand = c(0, 0),
-               date_breaks = "1 year",
-               date_labels = "%Y") +
-  scale_y_continuous(expand = c(0,0), limits = c(0, 80), breaks = seq(0, 80, by = 20)) +
-  annotate("rect", fill = "grey", alpha = 0.2,
-           xmin = as.Date("2014-01-01", "%Y-%m-%d"), xmax = as.Date("2014-12-31",  "%Y-%m-%d"),
-           ymin = -Inf, ymax = Inf) +
-  annotate("rect", fill = "grey", alpha = 0.2,
-           xmin = as.Date("2016-01-01", "%Y-%m-%d"), xmax = as.Date("2016-12-31",  "%Y-%m-%d"),
-           ymin = -Inf, ymax = Inf) +
-  annotate("rect", fill = "grey", alpha = 0.2,
-           xmin = as.Date("2018-01-01", "%Y-%m-%d"), xmax = as.Date("2018-12-31",  "%Y-%m-%d"),
-           ymin = -Inf, ymax = Inf) +
-  ylab("Number of laboratory reports") +
-  scale_color_manual(name = NULL, values = c("Points" = "black"), labels = "Data") +
-  scale_fill_manual(name = NULL, values = "blue", labels = "95% CrI") + # No need for a legend title for the ribbon
-  theme(title = element_text(size = 10),
-        axis.title.y = element_text(size = 10),
-        axis.title.x = element_blank(),
-        axis.text.x = element_text(size = 10),
-        axis.text.y = element_text(size = 10),
-        legend.text = element_text(size = 10),
-        legend.position = "right",
-        legend.spacing.y = unit(-0.09, 'cm')) +
-  guides(color = guide_legend(override.aes = list(linetype = 0)),
-         linetype = guide_legend(order = 2),
-         fill = guide_legend(order = 3)) +
-  labs(linetype = NULL, title = "Norovirus laboratory surveillance, 0-4 years olds (SGSS)")
+noro_1_trajectory <- generate_trajectories_with_uncertainty(lhs_samples, init.state, outcome = "noro_model_1")
 
-noro_2_fit_points <- traj_median |>
-  left_join(traj_summary |> select(time, percentile_2.5_noro_2, percentile_97.5_noro_2), by ="time") |>
-  left_join(observation_data, by = "time") |>
-  select(week_date, noro_model_2, percentile_2.5_noro_2, percentile_97.5_noro_2,  noro_obs_2) |>
-  ggplot(aes(x = week_date)) +
-  geom_point(aes(y = noro_obs_2, color = "Points"), size = 2, show.legend = FALSE) +
-  geom_line(aes(y = noro_model_2, linetype = "Model"), color = 'red', show.legend = FALSE) +
-  geom_ribbon(aes(ymin = percentile_2.5_noro_2, ymax = percentile_97.5_noro_2, fill = "Ribbon"), alpha = 0.5, show.legend = FALSE) +
-  theme_classic() +
-  scale_x_date(expand = c(0, 0),
-               date_breaks = "1 year",
-               date_labels = "%Y") +
-  scale_y_continuous(expand = c(0,0), limits = c(0, 20), breaks = seq(0, 20, by = 5)) +
-  annotate("rect", fill = "grey", alpha = 0.2,
-           xmin = as.Date("2014-01-01", "%Y-%m-%d"), xmax = as.Date("2014-12-31",  "%Y-%m-%d"),
-           ymin = -Inf, ymax = Inf) +
-  annotate("rect", fill = "grey", alpha = 0.2,
-           xmin = as.Date("2016-01-01", "%Y-%m-%d"), xmax = as.Date("2016-12-31",  "%Y-%m-%d"),
-           ymin = -Inf, ymax = Inf) +
-  annotate("rect", fill = "grey", alpha = 0.2,
-           xmin = as.Date("2018-01-01", "%Y-%m-%d"), xmax = as.Date("2018-12-31",  "%Y-%m-%d"),
-           ymin = -Inf, ymax = Inf) +
-  ylab("Number of laboratory reports") +
-  scale_color_manual(name = NULL, values = c("Points" = "black"), labels = "Data") +
-  scale_fill_manual(name = NULL, values = "blue", labels = "95% CrI") + # No need for a legend title for the ribbon
-  theme(title = element_text(size = 10),
-        axis.title.y = element_text(size = 10),
-        axis.title.x = element_blank(),
-        axis.text.x = element_text(size = 10),
-        axis.text.y = element_text(size = 10),
-        legend.text = element_text(size = 10),
-        legend.position = "right",
-        legend.spacing.y = unit(-0.09, 'cm')) +
-  guides(color = guide_legend(override.aes = list(linetype = 0)),
-         linetype = guide_legend(order = 2),
-         fill = guide_legend(order = 3)) +
-  labs(linetype = NULL, title = "Norovirus laboratory surveillance, 5-14 years olds (SGSS)")
+noro_1_quantiles_df <- data.frame(
+  time = 1:365,
+  median_traj = apply(noro_1_trajectory, 2, median),
+  ci_lower = apply(noro_1_trajectory, 2, quantile, 0.025),
+  ci_upper = apply(noro_1_trajectory, 2, quantile, 0.975)
+)
 
-noro_3_fit_points <- traj_median |>
-  left_join(traj_summary |> select(time, percentile_2.5_noro_3, percentile_97.5_noro_3), by ="time") |>
-  left_join(observation_data, by = "time") |>
-  select(week_date, noro_model_3, percentile_2.5_noro_3, percentile_97.5_noro_3,  noro_obs_3) |>
+noro_1_fit_points <- noro_1_quantiles_df |> 
+  left_join(observation_data |> select(time, week_date, noro_obs_1), by = "time") |>
+  filter(time < 364) |> 
   ggplot(aes(x = week_date)) +
-  geom_point(aes(y = noro_obs_3, color = "Points"), size = 2, show.legend = FALSE) +
-  geom_line(aes(y = noro_model_3, linetype = "Model"), color = 'red', show.legend = FALSE) +
-  geom_ribbon(aes(ymin = percentile_2.5_noro_3, ymax = percentile_97.5_noro_3, fill = "Ribbon"), alpha = 0.5, show.legend = FALSE) +
-  theme_classic() +
+  geom_ribbon(aes(ymin = ci_lower, ymax = ci_upper, fill = "95% CrI"), alpha = 0.5) +
+  geom_point(aes(y = noro_obs_1, color = "Observed"), size = 1.5) +
+  geom_line(aes(y = median_traj, color = "Model fit"), linewidth = 1) +
+  annotate("rect", fill = "gray95", alpha = 0.5,
+           xmin = as.Date("2014-01-01"), xmax = as.Date("2014-12-31"),
+           ymin = -Inf, ymax = Inf) +
+  annotate("rect", fill = "gray95", alpha = 0.5,
+           xmin = as.Date("2016-01-01"), xmax = as.Date("2016-12-31"),
+           ymin = -Inf, ymax = Inf) +
+  annotate("rect", fill = "gray95", alpha = 0.5,
+           xmin = as.Date("2018-01-01"), xmax = as.Date("2018-12-31"),
+           ymin = -Inf, ymax = Inf) +
+  theme_minimal(base_size = 11) +
   scale_x_date(expand = c(0, 0),
                date_breaks = "1 year",
                date_labels = "%Y") +
-  scale_y_continuous(expand = c(0,0), limits = c(0, 80), breaks = seq(0, 80, by = 20)) +
-  annotate("rect", fill = "grey", alpha = 0.2,
-           xmin = as.Date("2014-01-01", "%Y-%m-%d"), xmax = as.Date("2014-12-31",  "%Y-%m-%d"),
-           ymin = -Inf, ymax = Inf) +
-  annotate("rect", fill = "grey", alpha = 0.2,
-           xmin = as.Date("2016-01-01", "%Y-%m-%d"), xmax = as.Date("2016-12-31",  "%Y-%m-%d"),
-           ymin = -Inf, ymax = Inf) +
-  annotate("rect", fill = "grey", alpha = 0.2,
-           xmin = as.Date("2018-01-01", "%Y-%m-%d"), xmax = as.Date("2018-12-31",  "%Y-%m-%d"),
-           ymin = -Inf, ymax = Inf) +
-  ylab("Number of laboratory reports") +
-  scale_color_manual(name = NULL, values = c("Points" = "black"), labels = "Data") +
-  scale_fill_manual(name = NULL, values = "blue", labels = "95% CrI") + # No need for a legend title for the ribbon
-  theme(title = element_text(size = 10),
-        axis.title.y = element_text(size = 10),
-        axis.title.x = element_blank(),
-        axis.text.x = element_text(size = 10),
-        axis.text.y = element_text(size = 10),
-        legend.text = element_text(size = 10),
-        legend.position = "right",
-        legend.spacing.y = unit(-0.09, 'cm')) +
-  guides(color = guide_legend(override.aes = list(linetype = 0)),
-         linetype = guide_legend(order = 2),
-         fill = guide_legend(order = 3)) +
-  labs(linetype = NULL, title = "Norovirus laboratory surveillance, 15-64 years olds (SGSS)")
+  scale_y_continuous(expand = c(0, 0), 
+                     limits = c(0, 100), 
+                     breaks = seq(0, 100, by = 20)) +
+  scale_color_manual(values = c("Observed" = "#2c3e50", "Model fit" = "#e74c3c")) +
+  scale_fill_manual(values = c("95% CrI" = "#3498db")) +
+  labs(title = "Norovirus laboratory surveillance, 0-4 years olds (SGSS)",
+       y = "Number of laboratory reports",
+       x = NULL) +
+  theme(
+    plot.title = element_text(size = 12, face = "bold", margin = margin(b = 10)),
+    plot.subtitle = element_text(size = 11, color = "gray30", margin = margin(b = 15)),
+    axis.title.y = element_text(size = 11, margin = margin(r = 10)),
+    axis.text = element_text(size = 10, color = "gray30"),
+    legend.position = "bottom",
+    legend.title = element_blank(),
+    legend.spacing.x = unit(0.5, 'cm'),
+    panel.grid.major = element_blank(),
+    panel.grid.minor = element_blank(),
+    plot.margin = margin(t = 20, r = 20, b = 20, l = 20)
+  )
 
-noro_4_fit_points <- traj_median |>
-  left_join(traj_summary |> select(time, percentile_2.5_noro_4, percentile_97.5_noro_4), by ="time") |> 
-  left_join(observation_data, by = "time") |>
-  select(week_date, noro_model_4, percentile_2.5_noro_4, percentile_97.5_noro_4,  noro_obs_4) |> 
+noro_2_trajectory <- generate_trajectories_with_uncertainty(lhs_samples, init.state, outcome = "noro_model_2")
+
+noro_2_quantiles_df <- data.frame(
+  time = 1:365,
+  median_traj = apply(noro_2_trajectory, 2, median),
+  ci_lower = apply(noro_2_trajectory, 2, quantile, 0.025),
+  ci_upper = apply(noro_2_trajectory, 2, quantile, 0.975)
+)
+
+noro_2_fit_points <- noro_2_quantiles_df |> 
+  left_join(observation_data |> select(time, week_date, noro_obs_2), by = "time") |>
+  filter(time < 364) |> 
   ggplot(aes(x = week_date)) +
-  geom_point(aes(y = noro_obs_4, color = "Points"), size = 2, show.legend = FALSE) +
-  geom_line(aes(y = noro_model_4, linetype = "Model"), color = 'red', show.legend = FALSE) +
-  geom_ribbon(aes(ymin = percentile_2.5_noro_4, ymax = percentile_97.5_noro_4, fill = "Ribbon"), alpha = 0.5, show.legend = FALSE) +
-  theme_classic() +
+  geom_ribbon(aes(ymin = ci_lower, ymax = ci_upper, fill = "95% CrI"), alpha = 0.5) +
+  geom_point(aes(y = noro_obs_2, color = "Observed"), size = 1.5) +
+  geom_line(aes(y = median_traj, color = "Model fit"), linewidth = 1) +
+  annotate("rect", fill = "gray95", alpha = 0.5,
+           xmin = as.Date("2014-01-01"), xmax = as.Date("2014-12-31"),
+           ymin = -Inf, ymax = Inf) +
+  annotate("rect", fill = "gray95", alpha = 0.5,
+           xmin = as.Date("2016-01-01"), xmax = as.Date("2016-12-31"),
+           ymin = -Inf, ymax = Inf) +
+  annotate("rect", fill = "gray95", alpha = 0.5,
+           xmin = as.Date("2018-01-01"), xmax = as.Date("2018-12-31"),
+           ymin = -Inf, ymax = Inf) +
+  theme_minimal(base_size = 11) +
   scale_x_date(expand = c(0, 0),
                date_breaks = "1 year",
                date_labels = "%Y") +
-  scale_y_continuous(expand = c(0,0), limits = c(0, 300), breaks = seq(0, 300, by = 100)) +
-  annotate("rect", fill = "grey", alpha = 0.2,
-           xmin = as.Date("2014-01-01", "%Y-%m-%d"), xmax = as.Date("2014-12-31",  "%Y-%m-%d"),
+  scale_y_continuous(expand = c(0, 0), 
+                     limits = c(0, 40), 
+                     breaks = seq(0, 40, by = 10)) +
+  scale_color_manual(values = c("Observed" = "#2c3e50", "Model fit" = "#e74c3c")) +
+  scale_fill_manual(values = c("95% CrI" = "#3498db")) +
+  labs(title = "Norovirus laboratory surveillance, 5-14 years olds (SGSS)",
+       y = "Number of laboratory reports",
+       x = NULL) +
+  theme(
+    plot.title = element_text(size = 12, face = "bold", margin = margin(b = 10)),
+    plot.subtitle = element_text(size = 11, color = "gray30", margin = margin(b = 15)),
+    axis.title.y = element_text(size = 11, margin = margin(r = 10)),
+    axis.text = element_text(size = 10, color = "gray30"),
+    legend.position = "bottom",
+    legend.title = element_blank(),
+    legend.spacing.x = unit(0.5, 'cm'),
+    panel.grid.major = element_blank(),
+    panel.grid.minor = element_blank(),
+    plot.margin = margin(t = 20, r = 20, b = 20, l = 20)
+  )
+
+noro_3_trajectory <- generate_trajectories_with_uncertainty(lhs_samples, init.state, outcome = "noro_model_3")
+
+noro_3_quantiles_df <- data.frame(
+  time = 1:365,
+  median_traj = apply(noro_3_trajectory, 2, median),
+  ci_lower = apply(noro_3_trajectory, 2, quantile, 0.025),
+  ci_upper = apply(noro_3_trajectory, 2, quantile, 0.975)
+)
+
+noro_3_fit_points <- noro_3_quantiles_df |> 
+  left_join(observation_data |> select(time, week_date, noro_obs_3), by = "time") |>
+  filter(time < 364) |> 
+  ggplot(aes(x = week_date)) +
+  geom_ribbon(aes(ymin = ci_lower, ymax = ci_upper, fill = "95% CrI"), alpha = 0.5) +
+  geom_point(aes(y = noro_obs_3, color = "Observed"), size = 1.5) +
+  geom_line(aes(y = median_traj, color = "Model fit"), linewidth = 1) +
+  annotate("rect", fill = "gray95", alpha = 0.5,
+           xmin = as.Date("2014-01-01"), xmax = as.Date("2014-12-31"),
            ymin = -Inf, ymax = Inf) +
-  annotate("rect", fill = "grey", alpha = 0.2,
-           xmin = as.Date("2016-01-01", "%Y-%m-%d"), xmax = as.Date("2016-12-31",  "%Y-%m-%d"),
+  annotate("rect", fill = "gray95", alpha = 0.5,
+           xmin = as.Date("2016-01-01"), xmax = as.Date("2016-12-31"),
            ymin = -Inf, ymax = Inf) +
-  annotate("rect", fill = "grey", alpha = 0.2,
-           xmin = as.Date("2018-01-01", "%Y-%m-%d"), xmax = as.Date("2018-12-31",  "%Y-%m-%d"),
+  annotate("rect", fill = "gray95", alpha = 0.5,
+           xmin = as.Date("2018-01-01"), xmax = as.Date("2018-12-31"),
            ymin = -Inf, ymax = Inf) +
-  ylab("Number of laboratory reports") +
-  scale_color_manual(name = NULL, values = c("Points" = "black"), labels = "Data") +
-  scale_fill_manual(name = NULL, values = "blue", labels = "95% CrI") + # No need for a legend title for the ribbon
-  theme(title = element_text(size = 10),
-        axis.title.y = element_text(size = 10),
-        axis.title.x = element_blank(),
-        axis.text.x = element_text(size = 10),
-        axis.text.y = element_text(size = 10),
-        legend.text = element_text(size = 10),
-        legend.position = "right",
-        legend.spacing.y = unit(-0.09, 'cm')) +
-  guides(color = guide_legend(override.aes = list(linetype = 0)),
-         linetype = guide_legend(order = 2),
-         fill = guide_legend(order = 3)) +
-  labs(linetype = NULL, title = "Norovirus laboratory surveillance, 65+ years olds (SGSS)")
+  theme_minimal(base_size = 11) +
+  scale_x_date(expand = c(0, 0),
+               date_breaks = "1 year",
+               date_labels = "%Y") +
+  scale_y_continuous(expand = c(0, 0), 
+                     limits = c(0, 200), 
+                     breaks = seq(0, 200, by = 50)) +
+  scale_color_manual(values = c("Observed" = "#2c3e50", "Model fit" = "#e74c3c")) +
+  scale_fill_manual(values = c("95% CrI" = "#3498db")) +
+  labs(title = "Norovirus laboratory surveillance, 15-64 years olds (SGSS)",
+       y = "Number of laboratory reports",
+       x = NULL) +
+  theme(
+    plot.title = element_text(size = 12, face = "bold", margin = margin(b = 10)),
+    plot.subtitle = element_text(size = 11, color = "gray30", margin = margin(b = 15)),
+    axis.title.y = element_text(size = 11, margin = margin(r = 10)),
+    axis.text = element_text(size = 10, color = "gray30"),
+    legend.position = "bottom",
+    legend.title = element_blank(),
+    legend.spacing.x = unit(0.5, 'cm'),
+    panel.grid.major = element_blank(),
+    panel.grid.minor = element_blank(),
+    plot.margin = margin(t = 20, r = 20, b = 20, l = 20)
+  )
+ 
+noro_4_trajectory <- generate_trajectories_with_uncertainty(lhs_samples, init.state, outcome = "noro_model_4")
+
+noro_4_quantiles_df <- data.frame(
+  time = 1:365,
+  median_traj = apply(noro_4_trajectory, 2, median),
+  ci_lower = apply(noro_4_trajectory, 2, quantile, 0.025),
+  ci_upper = apply(noro_4_trajectory, 2, quantile, 0.975)
+)
+
+noro_4_fit_points <- noro_4_quantiles_df |> 
+  left_join(observation_data |> select(time, week_date, noro_obs_4), by = "time") |>
+  filter(time < 364) |> 
+  ggplot(aes(x = week_date)) +
+  geom_ribbon(aes(ymin = ci_lower, ymax = ci_upper, fill = "95% CrI"), alpha = 0.5) +
+  geom_point(aes(y = noro_obs_4, color = "Observed"), size = 1.5) +
+  geom_line(aes(y = median_traj, color = "Model fit"), linewidth = 1) +
+  annotate("rect", fill = "gray95", alpha = 0.5,
+           xmin = as.Date("2014-01-01"), xmax = as.Date("2014-12-31"),
+           ymin = -Inf, ymax = Inf) +
+  annotate("rect", fill = "gray95", alpha = 0.5,
+           xmin = as.Date("2016-01-01"), xmax = as.Date("2016-12-31"),
+           ymin = -Inf, ymax = Inf) +
+  annotate("rect", fill = "gray95", alpha = 0.5,
+           xmin = as.Date("2018-01-01"), xmax = as.Date("2018-12-31"),
+           ymin = -Inf, ymax = Inf) +
+  theme_minimal(base_size = 11) +
+  scale_x_date(expand = c(0, 0),
+               date_breaks = "1 year",
+               date_labels = "%Y") +
+  scale_y_continuous(expand = c(0, 0), 
+                     limits = c(0, 500), 
+                     breaks = seq(0, 500, by = 100)) +
+  scale_color_manual(values = c("Observed" = "#2c3e50", "Model fit" = "#e74c3c")) +
+  scale_fill_manual(values = c("95% CrI" = "#3498db")) +
+  labs(title = "Norovirus laboratory surveillance, 65+ year olds (SGSS)",
+       y = "Number of laboratory reports",
+       x = NULL) +
+  theme(
+    plot.title = element_text(size = 12, face = "bold", margin = margin(b = 10)),
+    plot.subtitle = element_text(size = 11, color = "gray30", margin = margin(b = 15)),
+    axis.title.y = element_text(size = 11, margin = margin(r = 10)),
+    axis.text = element_text(size = 10, color = "gray30"),
+    legend.position = "bottom",
+    legend.title = element_blank(),
+    legend.spacing.x = unit(0.5, 'cm'),
+    panel.grid.major = element_blank(),
+    panel.grid.minor = element_blank(),
+    plot.margin = margin(t = 20, r = 20, b = 20, l = 20)
+  )
 
 ## aki hosp fit to observation data (age 65+)
 
-aki_fit_points <- traj_median |>
-  left_join(traj_summary |> select(time, percentile_2.5_aki, percentile_97.5_aki), by ="time") |> 
-  left_join(observation_data, by = "time") |>
-  select(week_date, aki_hosp_model_4, percentile_2.5_aki, percentile_97.5_aki,  aki_hosp_obs_4) |> 
+aki_trajectory <- generate_trajectories_with_uncertainty(lhs_samples, init.state, outcome = "aki_hosp_model_4")
+
+aki_quantiles_df <- data.frame(
+  time = 1:365,
+  median_traj = apply(aki_trajectory, 2, median),
+  ci_lower = apply(aki_trajectory, 2, quantile, 0.025),
+  ci_upper = apply(aki_trajectory, 2, quantile, 0.975)
+)
+
+aki_fit_points <- aki_quantiles_df |> 
+  left_join(observation_data |> select(time, week_date, aki_hosp_obs_4), by = "time") |>
+  filter(time < 364) |> 
   ggplot(aes(x = week_date)) +
-  geom_ribbon(aes(ymin = percentile_2.5_aki, ymax = percentile_97.5_aki, fill = "Ribbon"), alpha = 0.5, show.legend = FALSE) +
-  geom_point(aes(y = aki_hosp_obs_4, color = "Points"), size = 2, show.legend = FALSE) +
-  geom_line(aes(y = aki_hosp_model_4, linetype = "Model"), color = "red", show.legend = FALSE) +
-  theme_classic() +
+  geom_ribbon(aes(ymin = ci_lower, ymax = ci_upper, fill = "95% CrI"), alpha = 0.5) +
+  geom_point(aes(y = aki_hosp_obs_4, color = "Observed"), size = 1.5) +
+  geom_line(aes(y = median_traj, color = "Model fit"), linewidth = 1) +
+  annotate("rect", fill = "gray95", alpha = 0.5,
+           xmin = as.Date("2014-01-01"), xmax = as.Date("2014-12-31"),
+           ymin = -Inf, ymax = Inf) +
+  annotate("rect", fill = "gray95", alpha = 0.5,
+           xmin = as.Date("2016-01-01"), xmax = as.Date("2016-12-31"),
+           ymin = -Inf, ymax = Inf) +
+  annotate("rect", fill = "gray95", alpha = 0.5,
+           xmin = as.Date("2018-01-01"), xmax = as.Date("2018-12-31"),
+           ymin = -Inf, ymax = Inf) +
+  # Heatwave periods
+  annotate("rect", fill = "#FF000030",
+           xmin = as.Date("2019-06-28"), xmax = as.Date("2019-06-30"),
+           ymin = -Inf, ymax = Inf) +
+  annotate("rect", fill = "#FF000030",
+           xmin = as.Date("2019-07-21"), xmax = as.Date("2019-07-28"),
+           ymin = -Inf, ymax = Inf) +
+  annotate("rect", fill = "#FF000030",
+           xmin = as.Date("2019-08-23"), xmax = as.Date("2019-08-29"),
+           ymin = -Inf, ymax = Inf) +
+  annotate("rect", fill = "#FF000030",
+           xmin = as.Date("2018-06-25"), xmax = as.Date("2018-06-27"),
+           ymin = -Inf, ymax = Inf) +
+  annotate("rect", fill = "#FF000030",
+           xmin = as.Date("2018-06-30"), xmax = as.Date("2018-07-10"),
+           ymin = -Inf, ymax = Inf) +
+  annotate("rect", fill = "#FF000030",
+           xmin = as.Date("2018-07-21"), xmax = as.Date("2018-07-29"),
+           ymin = -Inf, ymax = Inf) +
+  annotate("rect", fill = "#FF000030",
+           xmin = as.Date("2018-08-01"), xmax = as.Date("2018-08-09"),
+           ymin = -Inf, ymax = Inf) +
+  annotate("rect", fill = "#FF000030",
+           xmin = as.Date("2017-06-16"), xmax = as.Date("2017-06-23"),
+           ymin = -Inf, ymax = Inf) +
+  annotate("rect", fill = "#FF000030",
+           xmin = as.Date("2017-07-05"), xmax = as.Date("2017-07-07"),
+           ymin = -Inf, ymax = Inf) +
+  annotate("rect", fill = "#FF000030",
+           xmin = as.Date("2016-07-18"), xmax = as.Date("2016-07-22"),
+           ymin = -Inf, ymax = Inf) +
+  annotate("rect", fill = "#FF000030",
+           xmin = as.Date("2016-08-22"), xmax = as.Date("2016-08-26"),
+           ymin = -Inf, ymax = Inf) +
+  annotate("rect", fill = "#FF000030",
+           xmin = as.Date("2016-09-12"), xmax = as.Date("2016-09-17"),
+           ymin = -Inf, ymax = Inf) +
+  annotate("rect", fill = "#FF000030",
+           xmin = as.Date("2015-07-01"), xmax = as.Date("2015-07-03"),
+           ymin = -Inf, ymax = Inf) +
+  annotate("rect", fill = "#FF000030",
+           xmin = as.Date("2013-07-12"), xmax = as.Date("2013-07-23"),
+           ymin = -Inf, ymax = Inf) +
+  annotate("rect", fill = "#FF000030",
+           xmin = as.Date("2013-07-30"), xmax = as.Date("2013-08-02"),
+           ymin = -Inf, ymax = Inf) +
+  theme_minimal(base_size = 11) +
   scale_x_date(expand = c(0, 0),
                date_breaks = "1 year",
                date_labels = "%Y") +
-  scale_y_continuous(expand = c(0,0), limits = c(0, 200), breaks = seq(0, 200, by = 50)) +
-  annotate("rect", fill = "grey", alpha = 0.2,
-           xmin = as.Date("2014-01-01", "%Y-%m-%d"), xmax = as.Date("2014-12-31",  "%Y-%m-%d"),
-           ymin = -Inf, ymax = Inf) +
-  annotate("rect", fill = "grey", alpha = 0.2,
-           xmin = as.Date("2016-01-01", "%Y-%m-%d"), xmax = as.Date("2016-12-31",  "%Y-%m-%d"),
-           ymin = -Inf, ymax = Inf) +
-  annotate("rect", fill = "grey", alpha = 0.2,
-           xmin = as.Date("2018-01-01", "%Y-%m-%d"), xmax = as.Date("2018-12-31",  "%Y-%m-%d"),
-           ymin = -Inf, ymax = Inf) +
-  annotate("rect", fill = "red", alpha = 0.3,
-           xmin = as.Date("2019-06-28", "%Y-%m-%d"), xmax = as.Date("2019-06-30",  "%Y-%m-%d"),
-           ymin = -Inf, ymax = Inf) +
-  annotate("rect", fill = "red", alpha = 0.3,
-           xmin = as.Date("2019-07-21", "%Y-%m-%d"), xmax = as.Date("2019-07-28",  "%Y-%m-%d"),
-           ymin = -Inf, ymax = Inf) +
-  annotate("rect", fill = "red", alpha = 0.3,
-           xmin = as.Date("2019-08-23", "%Y-%m-%d"), xmax = as.Date("2019-08-29",  "%Y-%m-%d"),
-           ymin = -Inf, ymax = Inf) +
-  annotate("rect", fill = "red", alpha = 0.3,
-           xmin = as.Date("2018-06-25", "%Y-%m-%d"), xmax = as.Date("2018-06-27",  "%Y-%m-%d"),
-           ymin = -Inf, ymax = Inf) +
-  annotate("rect", fill = "red", alpha = 0.3,
-           xmin = as.Date("2018-06-30", "%Y-%m-%d"), xmax = as.Date("2018-07-10",  "%Y-%m-%d"),
-           ymin = -Inf, ymax = Inf) +
-  annotate("rect", fill = "red", alpha = 0.3,
-           xmin = as.Date("2018-07-21", "%Y-%m-%d"), xmax = as.Date("2018-07-29",  "%Y-%m-%d"),
-           ymin = -Inf, ymax = Inf) +
-  annotate("rect", fill = "red", alpha = 0.3,
-           xmin = as.Date("2018-08-01", "%Y-%m-%d"), xmax = as.Date("2018-08-09",  "%Y-%m-%d"),
-           ymin = -Inf, ymax = Inf) +
-  annotate("rect", fill = "red", alpha = 0.3,
-           xmin = as.Date("2017-06-16", "%Y-%m-%d"), xmax = as.Date("2017-06-23",  "%Y-%m-%d"),
-           ymin = -Inf, ymax = Inf) +
-  annotate("rect", fill = "red", alpha = 0.3,
-           xmin = as.Date("2017-07-05", "%Y-%m-%d"), xmax = as.Date("2017-07-07",  "%Y-%m-%d"),
-           ymin = -Inf, ymax = Inf) +
-  annotate("rect", fill = "red", alpha = 0.3,
-           xmin = as.Date("2016-07-18", "%Y-%m-%d"), xmax = as.Date("2016-07-22",  "%Y-%m-%d"),
-           ymin = -Inf, ymax = Inf) +
-  annotate("rect", fill = "red", alpha = 0.3,
-           xmin = as.Date("2016-08-22", "%Y-%m-%d"), xmax = as.Date("2016-08-26",  "%Y-%m-%d"),
-           ymin = -Inf, ymax = Inf) +
-  annotate("rect", fill = "red", alpha = 0.3,
-           xmin = as.Date("2016-09-12", "%Y-%m-%d"), xmax = as.Date("2016-09-17",  "%Y-%m-%d"),
-           ymin = -Inf, ymax = Inf) +
-  annotate("rect", fill = "red", alpha = 0.3,
-           xmin = as.Date("2015-07-01", "%Y-%m-%d"), xmax = as.Date("2015-07-03",  "%Y-%m-%d"),
-           ymin = -Inf, ymax = Inf) +
-  annotate("rect", fill = "red", alpha = 0.3,
-           xmin = as.Date("2013-07-12", "%Y-%m-%d"), xmax = as.Date("2013-07-23",  "%Y-%m-%d"),
-           ymin = -Inf, ymax = Inf) +
-  annotate("rect", fill = "red", alpha = 0.3,
-           xmin = as.Date("2013-07-30", "%Y-%m-%d"), xmax = as.Date("2013-08-02",  "%Y-%m-%d"),
-           ymin = -Inf, ymax = Inf) +
-  ylab("Incidence per 100,000 p-yrs") +
-  scale_color_manual(name = NULL, values = c("Points" = "black"), labels = "Data") +
-  scale_fill_manual(name = NULL, values = "blue", labels = "95% CrI") + # No need for a legend title for the ribbon
-  theme(title = element_text(size = 10),
-        axis.title.y = element_text(size = 10),
-        axis.title.x = element_blank(),
-        axis.text.x = element_text(size = 10),
-        axis.text.y = element_text(size = 10),
-        legend.text = element_text(size = 10),
-        legend.position = "right",
-        legend.spacing.y = unit(-0.09, 'cm')) +
-  guides(color = guide_legend(override.aes = list(linetype = 0)),
-         linetype = guide_legend(order = 2),
-         fill = guide_legend(order = 3)) +
-  labs(linetype = NULL ,title = "Acute kidney injury hospital admissions, 65+ years olds (HES)")
+  scale_y_continuous(expand = c(0, 0), 
+                     limits = c(0, 200), 
+                     breaks = seq(0, 200, by = 50)) +
+  scale_color_manual(values = c("Observed" = "#2c3e50", "Model fit" = "#e74c3c")) +
+  scale_fill_manual(values = c("95% CrI" = "#3498db")) +
+  labs(title = "Acute kidney injury hospital admissions, 65+ years olds (HES)",
+       y = "Incidence per 100,000 person-years",
+       x = NULL) +
+  theme(
+    axis.title.y = element_text(size = 11, margin = margin(r = 10)),
+    axis.text = element_text(size = 10, color = "gray30"),
+    legend.position = "bottom",
+    legend.title = element_blank(),
+    legend.spacing.x = unit(0.5, 'cm'),
+    panel.grid.major = element_blank(),
+    panel.grid.minor = element_blank(),
+    plot.margin = margin(t = 20, r = 20, b = 20, l = 20))
 
 ## gastro hosp fit to observation data (age 65+)
 
-gastro_fit_points <- traj_median |>
-  left_join(traj_summary |> select(time, percentile_2.5_gastro, percentile_97.5_gastro), by ="time") |> 
-  left_join(observation_data, by = "time") |>
-  select(week_date, gastro_hosp_model_4, percentile_2.5_gastro, percentile_97.5_gastro,  gastro_hosp_obs_4) |> 
+gastro_hosp_4_trajectory <- generate_trajectories_with_uncertainty(lhs_samples, init.state, outcome = "gastro_hosp_model_4")
+
+gastro_hosp_4_quantiles_df <- data.frame(
+  time = 1:365,
+  median_traj = apply(gastro_hosp_4_trajectory, 2, median),
+  ci_lower = apply(gastro_hosp_4_trajectory, 2, quantile, 0.025),
+  ci_upper = apply(gastro_hosp_4_trajectory, 2, quantile, 0.975)
+)
+
+gastro_fit_points <- gastro_hosp_4_quantiles_df |> 
+  left_join(observation_data |> select(time, week_date, gastro_hosp_obs_4), by = "time") |>
+  filter(time < 364) |> 
   ggplot(aes(x = week_date)) +
-  geom_ribbon(aes(ymin = percentile_2.5_gastro, ymax = percentile_97.5_gastro, fill = "Ribbon"), alpha = 0.5, show.legend = FALSE) +
-  geom_point(aes(y = gastro_hosp_obs_4, color = "Points"), size = 2, show.legend = FALSE) +
-  geom_line(aes(y = gastro_hosp_model_4, linetype = "Model"), color = "red", show.legend = FALSE) +
-  theme_classic() +
+  geom_ribbon(aes(ymin = ci_lower, ymax = ci_upper, fill = "95% CrI"), alpha = 0.5) +
+  geom_point(aes(y = gastro_hosp_obs_4, color = "Observed"), size = 1.5) +
+  geom_line(aes(y = median_traj, color = "Model fit"), linewidth = 1) +
+  annotate("rect", fill = "gray95", alpha = 0.5,
+           xmin = as.Date("2014-01-01"), xmax = as.Date("2014-12-31"),
+           ymin = -Inf, ymax = Inf) +
+  annotate("rect", fill = "gray95", alpha = 0.5,
+           xmin = as.Date("2016-01-01"), xmax = as.Date("2016-12-31"),
+           ymin = -Inf, ymax = Inf) +
+  annotate("rect", fill = "gray95", alpha = 0.5,
+           xmin = as.Date("2018-01-01"), xmax = as.Date("2018-12-31"),
+           ymin = -Inf, ymax = Inf) +
+  theme_minimal(base_size = 11) +
   scale_x_date(expand = c(0, 0),
                date_breaks = "1 year",
                date_labels = "%Y") +
-  scale_y_continuous(expand = c(0,0), limits = c(0, 80), breaks = seq(0, 80, by = 20)) +
-  annotate("rect", fill = "grey", alpha = 0.2,
-           xmin = as.Date("2014-01-01", "%Y-%m-%d"), xmax = as.Date("2014-12-31",  "%Y-%m-%d"),
-           ymin = -Inf, ymax = Inf) +
-  annotate("rect", fill = "grey", alpha = 0.2,
-           xmin = as.Date("2016-01-01", "%Y-%m-%d"), xmax = as.Date("2016-12-31",  "%Y-%m-%d"),
-           ymin = -Inf, ymax = Inf) +
-  annotate("rect", fill = "grey", alpha = 0.2,
-           xmin = as.Date("2018-01-01", "%Y-%m-%d"), xmax = as.Date("2018-12-31",  "%Y-%m-%d"),
-           ymin = -Inf, ymax = Inf) +
-  ylab("Incidence per 100,000 p-yrs") +
-  scale_color_manual(name = NULL, values = c("Points" = "black"), labels = "Data") +
-  scale_fill_manual(name = NULL, values = "blue", labels = "95% CrI") + # No need for a legend title for the ribbon
-  theme(title = element_text(size = 10),
-        axis.title.y = element_text(size = 10),
-        axis.title.x = element_blank(),
-        axis.text.x = element_text(size = 10),
-        axis.text.y = element_text(size = 10),
-        legend.text = element_text(size = 10),
-        legend.position = "right",
-        legend.spacing.y = unit(-0.09, 'cm')) +
-  guides(color = guide_legend(override.aes = list(linetype = 0)),
-         linetype = guide_legend(order = 2),
-         fill = guide_legend(order = 3)) +
-  labs(linetype = NULL, title = "Gastroenteritis hospital admissions, 65+ years olds (HES)")
+  scale_y_continuous(expand = c(0, 0), 
+                     limits = c(0, 100), 
+                     breaks = seq(0, 100, by = 25)) +
+  scale_color_manual(values = c("Observed" = "#2c3e50", "Model fit" = "#e74c3c")) +
+  scale_fill_manual(values = c("95% CrI" = "#3498db")) +
+  labs(title = "Gastroenteritis hospital admissions, 65+ years olds (HES)",
+       y = "Incidence per 100,000 person-years",
+       x = NULL) +
+  theme(
+    axis.title.y = element_text(size = 11, margin = margin(r = 10)),
+    axis.text = element_text(size = 10, color = "gray30"),
+    legend.position = "bottom",
+    legend.title = element_blank(),
+    legend.spacing.x = unit(0.5, 'cm'),
+    panel.grid.major = element_blank(),
+    panel.grid.minor = element_blank(),
+    plot.margin = margin(t = 20, r = 20, b = 20, l = 20))
 
 ## gastro hosp fit to observation data (age 0-4)
 
-gastro_gp1_fit_points <- traj_median |>
-  left_join(traj_summary |> select(time, percentile_2.5_gastro_gp1, percentile_97.5_gastro_gp1), by ="time") |> 
-  left_join(observation_data, by = "time") |>
-  select(week_date, gastro_gp_model_1, percentile_2.5_gastro_gp1, percentile_97.5_gastro_gp1,  gastro_gp_obs_1) |> 
+gastro_gp_1_trajectory <- generate_trajectories_with_uncertainty(lhs_samples, init.state, outcome = "gastro_gp_model_1")
+
+gastro_gp_1_quantiles_df <- data.frame(
+  time = 1:365,
+  median_traj = apply(gastro_gp_1_trajectory, 2, median, na.rm = TRUE),
+  ci_lower = apply(gastro_gp_1_trajectory, 2, quantile, 0.025, na.rm = TRUE),
+  ci_upper = apply(gastro_gp_1_trajectory, 2, quantile, 0.975, na.rm = TRUE)
+)
+
+gastro_gp_1_fit_points <- gastro_gp_1_quantiles_df |> 
+  left_join(observation_data |> select(time, week_date, gastro_gp_obs_1), by = "time") |>
+  filter(time < 364) |>
   ggplot(aes(x = week_date)) +
-  geom_ribbon(aes(ymin = percentile_2.5_gastro_gp1, ymax = percentile_97.5_gastro_gp1, fill = "Ribbon"), alpha = 0.5, show.legend = FALSE) +
-  geom_point(aes(y = gastro_gp_obs_1, color = "Points"), size = 2, show.legend = FALSE) +
-  geom_line(aes(y = gastro_gp_model_1, linetype = "Model"), color = "red", show.legend = FALSE) +
-  theme_classic() +
+  geom_ribbon(aes(ymin = ci_lower, ymax = ci_upper, fill = "95% CrI"), alpha = 0.5) +
+  geom_point(aes(y = gastro_gp_obs_1, color = "Observed"), size = 1.5) +
+  geom_line(aes(y = median_traj, color = "Model fit"), linewidth = 1) +
+  annotate("rect", fill = "gray95", alpha = 0.5,
+           xmin = as.Date("2014-01-01"), xmax = as.Date("2014-12-31"),
+           ymin = -Inf, ymax = Inf) +
+  annotate("rect", fill = "gray95", alpha = 0.5,
+           xmin = as.Date("2016-01-01"), xmax = as.Date("2016-12-31"),
+           ymin = -Inf, ymax = Inf) +
+  annotate("rect", fill = "gray95", alpha = 0.5,
+           xmin = as.Date("2018-01-01"), xmax = as.Date("2018-12-31"),
+           ymin = -Inf, ymax = Inf) +
+  theme_minimal(base_size = 11) +
   scale_x_date(expand = c(0, 0),
                date_breaks = "1 year",
                date_labels = "%Y") +
-  scale_y_continuous(expand = c(0,0), limits = c(0, 250), breaks = seq(0, 250, by = 50)) +
-  annotate("rect", fill = "grey", alpha = 0.2,
-           xmin = as.Date("2014-01-01", "%Y-%m-%d"), xmax = as.Date("2014-12-31",  "%Y-%m-%d"),
-           ymin = -Inf, ymax = Inf) +
-  annotate("rect", fill = "grey", alpha = 0.2,
-           xmin = as.Date("2016-01-01", "%Y-%m-%d"), xmax = as.Date("2016-12-31",  "%Y-%m-%d"),
-           ymin = -Inf, ymax = Inf) +
-  annotate("rect", fill = "grey", alpha = 0.2,
-           xmin = as.Date("2018-01-01", "%Y-%m-%d"), xmax = as.Date("2018-12-31",  "%Y-%m-%d"),
-           ymin = -Inf, ymax = Inf) +
-  ylab("Incidence per 100,000 p-yrs") +
-  scale_color_manual(name = NULL, values = c("Points" = "black"), labels = "Data") +
-  scale_fill_manual(name = NULL, values = "blue", labels = "95% CrI") + # No need for a legend title for the ribbon
-  theme(title = element_text(size = 10),
-        axis.title.y = element_text(size = 10),
-        axis.title.x = element_blank(),
-        axis.text.x = element_text(size = 10),
-        axis.text.y = element_text(size = 10),
-        legend.text = element_text(size = 10),
-        legend.position = "right",
-        legend.spacing.y = unit(-0.09, 'cm')) +
-  guides(color = guide_legend(override.aes = list(linetype = 0)),
-         linetype = guide_legend(order = 2),
-         fill = guide_legend(order = 3)) +
-  labs(linetype = NULL, title = "Gastroenteritis primary care attendance, 0-4 year olds (CPRD)")
+  scale_y_continuous(expand = c(0, 0), 
+                     limits = c(0, 400), 
+                     breaks = seq(0, 400, by = 50)) +
+  scale_color_manual(values = c("Observed" = "#2c3e50", "Model fit" = "#e74c3c")) +
+  scale_fill_manual(values = c("95% CrI" = "#3498db")) +
+  labs(title = "Gastroenteritis primary care attendance, 0-4 year olds (CPRD)",
+       y = "Incidence per 100,000 person-years",
+       x = NULL) +
+  theme(axis.title.y = element_text(size = 11, margin = margin(r = 10)),
+        axis.text = element_text(size = 10, color = "gray30"),
+        legend.position = "bottom",
+        legend.title = element_blank(),
+        legend.spacing.x = unit(0.5, 'cm'),
+        panel.grid.major = element_blank(),
+        panel.grid.minor = element_blank(),
+        plot.margin = margin(t = 20, r = 20, b = 20, l = 20)
+  )
 
 ## gastro hosp fit to observation data (age 5-14)
 
-gastro_gp2_fit_points <- traj_median |>
-  left_join(traj_summary |> select(time, percentile_2.5_gastro_gp2, percentile_97.5_gastro_gp2), by ="time") |> 
-  left_join(observation_data, by = "time") |>
-  select(week_date, gastro_gp_model_2, percentile_2.5_gastro_gp2, percentile_97.5_gastro_gp2,  gastro_gp_obs_2) |> 
+gastro_gp_2_trajectory <- generate_trajectories_with_uncertainty(lhs_samples, init.state, outcome = "gastro_gp_model_2")
+
+gastro_gp_2_quantiles_df <- data.frame(
+  time = 1:365,
+  median_traj = apply(gastro_gp_2_trajectory, 2, median, na.rm = TRUE),
+  ci_lower = apply(gastro_gp_2_trajectory, 2, quantile, 0.025, na.rm = TRUE),
+  ci_upper = apply(gastro_gp_2_trajectory, 2, quantile, 0.975, na.rm = TRUE)
+)
+
+gastro_gp_2_fit_points <- gastro_gp_2_quantiles_df |> 
+  left_join(observation_data |> select(time, week_date, gastro_gp_obs_2), by = "time") |>
+  filter(time < 364) |>
   ggplot(aes(x = week_date)) +
-  geom_ribbon(aes(ymin = percentile_2.5_gastro_gp2, ymax = percentile_97.5_gastro_gp2, fill = "Ribbon"), alpha = 0.5, show.legend = FALSE) +
-  geom_point(aes(y = gastro_gp_obs_2, color = "Points"), size = 2, show.legend = FALSE) +
-  geom_line(aes(y = gastro_gp_model_2, linetype = "Model"), color = "red", show.legend = FALSE) +
-  theme_classic() +
+  geom_ribbon(aes(ymin = ci_lower, ymax = ci_upper, fill = "95% CrI"), alpha = 0.5) +
+  geom_point(aes(y = gastro_gp_obs_2, color = "Observed"), size = 1.5) +
+  geom_line(aes(y = median_traj, color = "Model fit"), linewidth = 1) +
+  annotate("rect", fill = "gray95", alpha = 0.5,
+           xmin = as.Date("2014-01-01"), xmax = as.Date("2014-12-31"),
+           ymin = -Inf, ymax = Inf) +
+  annotate("rect", fill = "gray95", alpha = 0.5,
+           xmin = as.Date("2016-01-01"), xmax = as.Date("2016-12-31"),
+           ymin = -Inf, ymax = Inf) +
+  annotate("rect", fill = "gray95", alpha = 0.5,
+           xmin = as.Date("2018-01-01"), xmax = as.Date("2018-12-31"),
+           ymin = -Inf, ymax = Inf) +
+  theme_minimal(base_size = 11) +
   scale_x_date(expand = c(0, 0),
                date_breaks = "1 year",
                date_labels = "%Y") +
-  scale_y_continuous(expand = c(0,0), limits = c(0, 75), breaks = seq(0, 75, by = 25)) +
-  annotate("rect", fill = "grey", alpha = 0.2,
-           xmin = as.Date("2014-01-01", "%Y-%m-%d"), xmax = as.Date("2014-12-31",  "%Y-%m-%d"),
-           ymin = -Inf, ymax = Inf) +
-  annotate("rect", fill = "grey", alpha = 0.2,
-           xmin = as.Date("2016-01-01", "%Y-%m-%d"), xmax = as.Date("2016-12-31",  "%Y-%m-%d"),
-           ymin = -Inf, ymax = Inf) +
-  annotate("rect", fill = "grey", alpha = 0.2,
-           xmin = as.Date("2018-01-01", "%Y-%m-%d"), xmax = as.Date("2018-12-31",  "%Y-%m-%d"),
-           ymin = -Inf, ymax = Inf) +
-  ylab("Incidence per 100,000 p-yrs") +
-  scale_color_manual(name = NULL, values = c("Points" = "black"), labels = "Data") +
-  scale_fill_manual(name = NULL, values = "blue", labels = "95% CrI") + # No need for a legend title for the ribbon
-  theme(title = element_text(size = 10),
-    axis.title.y = element_text(size = 10),
-        axis.title.x = element_blank(),
-        axis.text.x = element_text(size = 10),
-        axis.text.y = element_text(size = 10),
-        legend.text = element_text(size = 10),
-        legend.position = "right",
-        legend.spacing.y = unit(-0.09, 'cm')) +
-  guides(color = guide_legend(override.aes = list(linetype = 0)),
-         linetype = guide_legend(order = 2),
-         fill = guide_legend(order = 3)) +
-  labs(linetype = NULL, 
-       title = "Gastroenteritis primary care attendance, 5-14 year olds (CPRD)")
+  scale_y_continuous(expand = c(0, 0), 
+                     limits = c(0, 200), 
+                     breaks = seq(0, 200, by = 50)) +
+  scale_color_manual(values = c("Observed" = "#2c3e50", "Model fit" = "#e74c3c")) +
+  scale_fill_manual(values = c("95% CrI" = "#3498db")) +
+  labs(title = "Gastroenteritis primary care attendance, 5-14 year olds (CPRD)",
+       y = "Incidence per 100,000 person-years",
+       x = NULL) +
+  theme(axis.title.y = element_text(size = 11, margin = margin(r = 10)),
+        axis.text = element_text(size = 10, color = "gray30"),
+        legend.position = "bottom",
+        legend.title = element_blank(),
+        legend.spacing.x = unit(0.5, 'cm'),
+        panel.grid.major = element_blank(),
+        panel.grid.minor = element_blank(),
+        plot.margin = margin(t = 20, r = 20, b = 20, l = 20)
+  )
+       
 
-ggarrange(noro_1_fit_points, noro_2_fit_points, noro_3_fit_points, noro_4_fit_points, ncol = 2, nrow = 2, labels = c("A", "B", "C", "D"))
+multi_panel_noro_surveillance_plot <- ggarrange(
+  noro_1_fit_points,
+  noro_2_fit_points,
+  noro_3_fit_points,
+  noro_4_fit_points,
+  ncol = 2,
+  nrow = 2,
+  labels = c("A", "B", "C", "D"),
+  common.legend = TRUE
+)
 
-ggsave("figures/multi_panel_figure_1.png", width = 12, height = 14)
-ggsave("figures/multi_panel_figure_1.pdf", width = 12, height = 14)
+multi_panel_noro_surveillance_plot
 
-ggarrange(gastro_gp1_fit_points, gastro_gp2_fit_points, gastro_fit_points, aki_fit_points, ncol = 2, nrow = 2, labels = c("A", "B", "C", "D"))
+# ggsave("figures/multi_panel_noro_surveillance_plot.png", width = 14, height = 12, dpi = 300)
+# ggsave("figures/multi_panel_figure_1.pdf", width = 12, height = 14)
 
-ggsave("figures/multi_panel_figure_2.png", width = 12, height = 14)
-ggsave("figures/multi_panel_figure_2.pdf", width = 12, height = 14)
+multi_panel_healthcare_plot <- ggarrange(
+  gastro_gp_1_fit_points,
+  gastro_gp_2_fit_points,
+  gastro_fit_points,
+  aki_fit_points,
+  ncol = 2,
+  nrow = 2,
+  labels = c("A", "B", "C", "D"),
+  common.legend = TRUE,
+  legend = "bottom"
+)
 
-ggarrange(noro_1_fit_points, noro_2_fit_points, noro_3_fit_points, noro_4_fit_points, gastro_gp1_fit_points, gastro_gp2_fit_points, gastro_fit_points, aki_fit_points, ncol = 2, nrow = 4, labels = c("A", "B", "C", "D"))
+multi_panel_healthcare_plot
 
-ggsave("figures/multi_panel_figure.png", width = 12, height = 14)
+# ggsave("figures/multi_panel_healthcare_plot.png", width = 14, height = 12, dpi = 600)
 
+# ggsave("figures/multi_panel_figure_2.png", width = 12, height = 14)
+# ggsave("figures/multi_panel_figure_2.pdf", width = 12, height = 14)
 
-incidence_fit
+# ggarrange(noro_1_fit_points, noro_2_fit_points, noro_3_fit_points, noro_4_fit_points, gastro_gp1_fit_points, gastro_gp2_fit_points, gastro_fit_points, aki_fit_points, ncol = 2, nrow = 4, labels = c("A", "B", "C", "D"))
+
+# ggsave("figures/multi_panel_figure.png", width = 12, height = 14)
 
 source("R/07_reference_costing.R")
 
@@ -860,19 +976,19 @@ cost_table <- cost_per_year_signif |>
 
 cost_table
 
-save_as_image(cost_table, path = "figures/cost_table.png")
+# save_as_image(cost_table, path = "figures/cost_table.png")
 
 #' multiple chains
 
-xyplot(multi_trace_params)
+# xyplot(multi_trace_params)
 
 #' #### logDensity
 
-xyplot(multi_trace_log_density)
+# xyplot(multi_trace_log_density)
 
-traceBurnThin_params_multi <- burnAndThin(multi_trace_params, burn = burn_value, thin = thin_factor)
+# traceBurnThin_params_multi <- burnAndThin(multi_trace_params, burn = burn_value, thin = thin_factor)
 
 #' ## multiple chains without burn in
 
-xyplot(traceBurnThin_params_multi)
+# xyplot(traceBurnThin_params_multi)
 

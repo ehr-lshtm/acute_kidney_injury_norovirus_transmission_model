@@ -25,6 +25,7 @@ simulate <- function(parameters, init.state, times, age.incidence = FALSE) {
   data[, week_date := floor_date(new_date, "week", week_start = 1)]
   data[, year := year(new_date)]
   
+  
   # Filter by week_date
   filtered_data <- data[week_date > as.Date('2013-01-01') & week_date <= as.Date('2019-12-30')]
   
@@ -70,6 +71,9 @@ simulate <- function(parameters, init.state, times, age.incidence = FALSE) {
   # Add a new variable 'time' that increases by 1 for each row
   summarized_data[, time := 0:(.N - 1)]
   
+  # Add a week number variable to change the reporting during seasons
+  summarized_data[, week_number := week(week_date)]
+  
   # transform aki parameter
   
   aki_hosp_param4 <- exp(parameters[["aki_hospitalisation_4"]])
@@ -97,10 +101,23 @@ simulate <- function(parameters, init.state, times, age.incidence = FALSE) {
   
   # Calculate noro_value and aki_hosp_model_4
   summarized_data[, `:=` (
-    noro_model_1 = infectious_symp_1 * parameters[["surveillance_report_1"]],
-    noro_model_2 = infectious_symp_2 * parameters[["surveillance_report_2"]],
-    noro_model_3 = infectious_symp_3 * parameters[["surveillance_report_3"]],
-    noro_model_4 = infectious_symp_4 * parameters[["surveillance_report_4"]],
+    noro_model_1 = infectious_symp_1 * (
+      (0.5 * (1 + cos(2 * pi * (week_number - 1)/52))) * parameters[["surveillance_report_2_winter"]] +
+        (0.5 * (1 - cos(2 * pi * (week_number - 1)/52))) * parameters[["surveillance_report_2_summer"]]
+    ),
+    noro_model_2 = infectious_symp_2 * (
+      (0.5 * (1 + cos(2 * pi * (week_number - 1)/52))) * parameters[["surveillance_report_2_winter"]] +
+        (0.5 * (1 - cos(2 * pi * (week_number - 1)/52))) * parameters[["surveillance_report_2_summer"]]
+    ),
+    noro_model_3 = infectious_symp_3 * (
+      (0.5 * (1 + cos(2 * pi * (week_number - 1)/52))) * parameters[["surveillance_report_3_winter"]] +
+        (0.5 * (1 - cos(2 * pi * (week_number - 1)/52))) * parameters[["surveillance_report_3_summer"]]
+    ),
+    noro_model_4 = infectious_symp_4 * (
+      (0.5 * (1 + cos(2 * pi * (week_number - 1)/52))) * parameters[["surveillance_report_4_winter"]] +
+        (0.5 * (1 - cos(2 * pi * (week_number - 1)/52))) * parameters[["surveillance_report_4_summer"]]
+    ),
+    # noro_model_4 = infectious_symp_4 * parameters[["surveillance_report_4"]],
     # noro_model = (exposed_4 / init.state[4, 1] * 1000000) * parameters[["surveillance_report"]],
     # test = (((infectious_symp_4 / init.state[4, 1] * 100000) + model_spl_pred4_diff)),
     # aki_hosp_model_4 = ((((infectious_symp_4 / init.state[4, 1] * 100000) + model_spl_pred4_diff))*aki_hosp_param4),
@@ -134,10 +151,10 @@ simulate <- function(parameters, init.state, times, age.incidence = FALSE) {
     # gastro_gp_model_2 = ((((infectious_symp_2 / init.state[2, 1] * 100000) * gastro_gp_param2)
     #                      - median((infectious_symp_2 / init.state[2, 1] * 100000) * gastro_gp_param2)
     # ) + gastro_gp_model_spl_pred2),
-    infectious_symp_1 = infectious_symp_1 / init.state[1, 1] * 100000,
-    infectious_symp_2 = infectious_symp_2 / init.state[2, 1] * 100000,
-    infectious_symp_3 = infectious_symp_3 / init.state[3, 1] * 100000,
-    infectious_symp_4 = infectious_symp_4 / init.state[4, 1] * 100000,
+    # infectious_symp_1 = infectious_symp_1 / init.state[1, 1] * 100000,
+    # infectious_symp_2 = infectious_symp_2 / init.state[2, 1] * 100000,
+    # infectious_symp_3 = infectious_symp_3 / init.state[3, 1] * 100000,
+    # infectious_symp_4 = infectious_symp_4 / init.state[4, 1] * 100000,
     infectious_symp_1_count = infectious_symp_1,
     infectious_symp_2_count = infectious_symp_2,
     infectious_symp_3_count = infectious_symp_3,
@@ -213,3 +230,4 @@ simulate <- function(parameters, init.state, times, age.incidence = FALSE) {
   
 }
 
+# plot(summarized_data$time, summarized_data$noro_model_4)

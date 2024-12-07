@@ -59,7 +59,12 @@ noro_data <- fread(file.path(noro_data_path, "Norovirus_weekly_counts_England__2
          noro_obs_3 = `15-64`,
          noro_obs_4 = `65+`
          ) |> 
-  select(time, noro_obs_1, noro_obs_2, noro_obs_3, noro_obs_4)
+  select(time, noro_obs_1, noro_obs_2, noro_obs_3, noro_obs_4) |> 
+  mutate(noro_obs_2 = case_when(
+    is.na(noro_obs_2) ~ 0,
+    TRUE ~ noro_obs_2
+    )
+  )
 
 ###################
 ## aki hospitalisation data for visualisation
@@ -86,7 +91,7 @@ aki_hosp_spell <- read_parquet(file.path(data_files_path, "a_hes_aki_spell_commu
                 age_group == "15-64" ~ "aki_hosp_obs_3",
                 age_group == "65+" ~ "aki_hosp_obs_4",
               )), by = c("age_group", "year")) |> 
-  mutate(aki_hosp_incidence = round((n/denom_n)*100000, digits = 2)) |> 
+  mutate(aki_hosp_incidence = round((n/denom_n)*100000, digits = 0)) |> 
   select(week_date, age_group, aki_hosp_incidence) |> 
   pivot_wider(names_from = age_group, values_from = aki_hosp_incidence) |> 
   arrange(week_date) |> 
@@ -122,7 +127,7 @@ gastro_hosp_spell <- read_parquet(file.path(data_files_path, "a_hes_gastro_spell
                 age_group == "15-64" ~ "gastro_hosp_obs_3",
                 age_group == "65+" ~ "gastro_hosp_obs_4",
               )), by = c("age_group", "year")) |> 
-  mutate(gastro_hosp_incidence = round((n/denom_n)*100000, digits = 2)) |> 
+  mutate(gastro_hosp_incidence = round((n/denom_n)*100000, digits = 0)) |> 
   select(week_date, age_group, gastro_hosp_incidence) |> 
   pivot_wider(names_from = age_group, values_from = gastro_hosp_incidence) |> 
   arrange(week_date) |> 
@@ -162,7 +167,7 @@ gastro_gp_attendance <- read_parquet(file.path(data_files_path, "gastro_aurum_ev
                 age_group == "15-64" ~ "gastro_gp_obs_3",
                 age_group == "65+" ~ "gastro_gp_obs_4",
               )), by = c("age_group", "year")) |> 
-  mutate(gastro_gp_incidence = round((n/denom_n)*100000, digits = 2)) |> 
+  mutate(gastro_gp_incidence = round((n/denom_n)*100000, digits = 0)) |> 
   select(week_date, age_group, gastro_gp_incidence) |> 
   pivot_wider(names_from = age_group, values_from = gastro_gp_incidence) |> 
   arrange(week_date) |> 
@@ -356,3 +361,78 @@ observation_data2 <- noro_data |>
 #   filter(id == 1) %>% 
 #   select(-id)
 # 
+
+#######################
+## sensitivity analysis##
+#######################
+
+# AKI in primary and secondary position
+
+
+aki_hosp_spell_primary_secondary <- read_parquet(file.path(data_files_path, "a_hes_aki_spell_community_position_primary_secondary.parquet")) |>
+  # aki_hosp_spell <- fread(file.path(data_files_path, "a_hes_aki_spell.txt")) |>
+  mutate(age_group = case_when(
+    age_at_admission < 5 ~ "aki_hosp_obs_1",
+    age_at_admission > 4 & age_at_admission < 15 ~ "aki_hosp_obs_2",
+    age_at_admission > 14 & age_at_admission < 65 ~ "aki_hosp_obs_3",
+    age_at_admission > 64 ~ "aki_hosp_obs_4"
+  )) |> 
+  group_by(age_group) |> 
+  count(week_date = floor_date(admidate, "week", week_start = 7)) |>
+  ungroup() |>
+  filter(week_date > "2012-12-30" & week_date <= "2019-12-29") |> 
+  mutate(year = year(week_date)) |> 
+  # convert to incidence using hes denominator
+  left_join(hes_annual_denominator |> 
+              mutate(age_group = case_when(
+                age_group == "0-4" ~ "aki_hosp_obs_1",
+                age_group == "5-14" ~ "aki_hosp_obs_2",
+                age_group == "15-64" ~ "aki_hosp_obs_3",
+                age_group == "65+" ~ "aki_hosp_obs_4",
+              )), by = c("age_group", "year")) |> 
+  mutate(aki_hosp_incidence = round((n/denom_n)*100000, digits = 0)) |> 
+  select(week_date, age_group, aki_hosp_incidence) |> 
+  pivot_wider(names_from = age_group, values_from = aki_hosp_incidence) |> 
+  arrange(week_date) |> 
+  mutate(time = seq(from = 0, to = 364, by = 1))
+
+
+observation_data_sensitivity_primary_secondary_aki <- noro_data |> 
+  left_join(aki_hosp_spell_primary_secondary, by = "time") |> 
+  left_join(gastro_hosp_spell2, by = "time") |> 
+  left_join(gastro_gp_attendance2, by = "time")
+
+# AKI any time any position
+
+aki_hosp_spell_any_time <- read_parquet(file.path(data_files_path, "a_hes_aki_spell.parquet")) |>
+  # aki_hosp_spell <- fread(file.path(data_files_path, "a_hes_aki_spell.txt")) |>
+  mutate(age_group = case_when(
+    age_at_admission < 5 ~ "aki_hosp_obs_1",
+    age_at_admission > 4 & age_at_admission < 15 ~ "aki_hosp_obs_2",
+    age_at_admission > 14 & age_at_admission < 65 ~ "aki_hosp_obs_3",
+    age_at_admission > 64 ~ "aki_hosp_obs_4"
+  )) |> 
+  group_by(age_group) |> 
+  count(week_date = floor_date(admidate, "week", week_start = 7)) |>
+  ungroup() |>
+  filter(week_date > "2012-12-30" & week_date <= "2019-12-29") |> 
+  mutate(year = year(week_date)) |> 
+  # convert to incidence using hes denominator
+  left_join(hes_annual_denominator |> 
+              mutate(age_group = case_when(
+                age_group == "0-4" ~ "aki_hosp_obs_1",
+                age_group == "5-14" ~ "aki_hosp_obs_2",
+                age_group == "15-64" ~ "aki_hosp_obs_3",
+                age_group == "65+" ~ "aki_hosp_obs_4",
+              )), by = c("age_group", "year")) |> 
+  mutate(aki_hosp_incidence = round((n/denom_n)*100000, digits = 0)) |> 
+  select(week_date, age_group, aki_hosp_incidence) |> 
+  pivot_wider(names_from = age_group, values_from = aki_hosp_incidence) |> 
+  arrange(week_date) |> 
+  mutate(time = seq(from = 0, to = 364, by = 1))
+
+
+observation_data_sensitivity_any_time <- noro_data |> 
+  left_join(aki_hosp_spell_any_time, by = "time") |> 
+  left_join(gastro_hosp_spell2, by = "time") |> 
+  left_join(gastro_gp_attendance2, by = "time")

@@ -5,81 +5,73 @@
 
 log_prior_sum <- function(parameters, log = FALSE) {
   
-  ## uniform prior on R0: U[1,3]
-  log.prior.surveillance_report_1 <- dunif(parameters[["surveillance_report_1"]], min = 0, max = 0.1, log = TRUE)
+  ## uniform prior surveillance report 0-4
+  log.prior.surveillance_report_1_summer <- dunif(parameters[["surveillance_report_1_summer"]], min = 0, max = 0.01, log = TRUE)
 
-  ## uniform prior on R0: U[1,3]
-  log.prior.surveillance_report_2 <- dunif(parameters[["surveillance_report_2"]], min = 0, max = 0.1, log = TRUE)
+    ## uniform prior surveillance report 0-4
+  log.prior.surveillance_report_1_winter <- dunif(parameters[["surveillance_report_1_winter"]], min = 0, max = 0.01, log = TRUE)
 
-  ## uniform prior on R0: U[1,3]
-  log.prior.surveillance_report_3 <- dunif(parameters[["surveillance_report_3"]], min = 0, max = 0.1, log = TRUE)
+  ## uniform prior surveillance report 5-14
+  log.prior.surveillance_report_2_summer <- dunif(parameters[["surveillance_report_2_summer"]], min = 0, max = 0.01, log = TRUE)
+  
+  ## uniform prior surveillance report 5-14
+  log.prior.surveillance_report_2_winter <- dunif(parameters[["surveillance_report_2_winter"]], min = 0, max = 0.01, log = TRUE)
 
-  ## uniform prior on R0: U[1,3]
-  log.prior.surveillance_report_4 <- dunif(parameters[["surveillance_report_4"]], min = 0, max = 0.1, log = TRUE)
+  ## uniform prior surveillance report 15-64 summer
+  log.prior.surveillance_report_3_summer <- dunif(parameters[["surveillance_report_3_summer"]], min = 0, max = 0.01, log = TRUE)
 
-  ## uniform prior on proportion infections symptomatic: U[0,5]
-  log.prior.sigma <- dnorm(exp(parameters[["sigma"]]), mean = 0.715, sd = 0.094, log = TRUE)
+    ## uniform prior surveillance report 15-64 winter
+  log.prior.surveillance_report_3_winter <- dunif(parameters[["surveillance_report_3_winter"]], min = 0, max = 0.01, log = TRUE)
+
+  ## uniform prior surveillance reprot 65+ summer
+  log.prior.surveillance_report_4_summer <- dunif(parameters[["surveillance_report_4_summer"]], min = 0, max = 0.02, log = TRUE)
+
+  ## uniform prior surveillance reprot 65+ winter
+  log.prior.surveillance_report_4_winter <- dunif(parameters[["surveillance_report_4_winter"]], min = 0, max = 0.06, log = TRUE)
+
+  ## log normal prior on proportion infections symptomatic
+  log.prior.sigma <- dnorm(parameters[["sigma"]], mean = 0.75, sd = 0.075, log = TRUE)
   
-  ## uniform prior on infectiousness during asymptomatic period: U[0,5]
-  # log.prior.rho <- dunif(parameters[["rho"]], min = 0, max = 0.1, log = TRUE)
+  ## uniform prior on infectiousness during asymptomatic period
+  log.prior.w1<- dunif((parameters[["season_amp"]]), min = 0, max = 10, log = TRUE)
   
-  ## uniform prior on infectiousness during asymptomatic period: U[0,5]
-  log.prior.w1<- dunif((parameters[["season_amp"]] / 100), min = 0, max = 0.5, log = TRUE)
+  ## uniform prior on infectiousness during asymptomatic period
+  log.prior.w2<- dunif((parameters[["season_offset"]]), min = 0, max = 50, log = TRUE)
   
-  ## uniform prior on infectiousness during asymptomatic period: U[0,5]
-  log.prior.w2<- dunif((parameters[["season_offset"]] / 100), min = 0, max = 0.5, log = TRUE)
-  
-  ## uniform prior on multiplication factor for over 65 seasonal amplitude period: U[0,5]
+  ## uniform prior on multiplication factor for over 65 seasonal amplitude period
   log.prior.w3<- dunif(parameters[["season_amp_over65"]], min = 0, max = 10, log = TRUE)
   
-  ## uniform prior on immunity waning period: U[0,5]
-  log.prior.delta <- dunif(parameters[["D_immun"]], min = 3, max = 12, log = TRUE)
-  # log.prior.delta <- dunif(parameters[["D_immun"]], min = 0, max = 20, log = TRUE)
+  ## uniform prior on immunity waning period
+  log.prior.delta <- dunif(parameters[["D_immun"]], min = 0.5, max = 14, log = TRUE)
+
+  ## log normal prior on probability transmission under 5
+  log.prior.q1 <- dnorm(parameters[["probT_under5"]], mean = log(0.21), sd = 0.115, log = TRUE)
   
-  ## uniform prior on probability transmission under 5: U[0,5]
-  log.prior.q1 <- dnorm(exp(parameters[["probT_under5"]]), mean = 0.21, sd = 0.008, log = TRUE)
-  
-  ## uniform prior on probability transmission under 5: U[0,5]
-  log.prior.q2 <- dnorm(exp(parameters[["probT_over5"]]), mean = 0.0356, sd = 0.00023, log = TRUE)
+  ## log normal prior on probability transmission under 5
+  log.prior.q2 <- dnorm(parameters[["probT_over5"]], mean = log(0.05), sd = 0.032, log = TRUE)
 
-  # ## uniform prior on aki hospitalisation: U[0,1]
-  # log.prior.aki_hospitalisation1 <- dunif(log(parameters[["aki_hospitalisation_1"]]), min = log(0), max = log(0.1), log = TRUE)
-  # 
-  # ## uniform prior on aki hospitalisation: U[0,1]
-  # log.prior.aki_hospitalisation2 <- dunif(log(parameters[["aki_hospitalisation_2"]]), min = log(0), max = (0.1), log = TRUE)
-  # 
-  # ## uniform prior on aki hospitalisation: U[0,1]
-  # log.prior.aki_hospitalisation3 <- dunif(log(parameters[["aki_hospitalisation_3"]]), min = log(0), max = (0.3), log = TRUE)
-  
-  ## uniform prior on aki hospitalisation: U[0,1]
-  log.prior.aki_hospitalisation4 <- dunif(exp(parameters[["aki_hospitalisation_4"]]), min = 0, max = 0.5, log = TRUE)
+  ## uniform prior on aki hospitalisation
+  log.prior.aki_hospitalisation4 <- dunif(parameters[["aki_hospitalisation_4"]], min = log(0.0001), max = log(0.5), log = TRUE)
 
-  ## uniform prior on gastro hospitalisation: U[0,1]
-  # log.prior.gastro_hospitalisation1 <- dunif(exp(parameters[["gastro_hospitalisation_1"]]), min = 0, max = 1, log = TRUE)
+  ## uniform prior on gastro hospitalisation
+  log.prior.gastro_hospitalisation4 <- dunif(parameters[["gastro_hospitalisation_4"]], min = log(0.0001), max = log(0.5), log = TRUE)
 
-  ## uniform prior on gastro hospitalisation: U[0,1]
-  # log.prior.gastro_hospitalisation2 <- dunif(exp(parameters[["gastro_hospitalisation_2"]]), min = 0, max = 1, log = TRUE)
+  ## uniform prior on gastro hospitalisation
+  log.prior.gastro_gp_attend_1 <- dunif(parameters[["gastro_gp_attend_1"]], min = log(0.0001), max = log(0.5), log = TRUE)
 
-  ## uniform prior on gastro hospitalisation: U[0,1]
-  # log.prior.gastro_hospitalisation3 <- dunif(log(parameters[["gastro_hospitalisation_3"]]), min = log(0.001), max = log(1), log = TRUE)
-
-  ## uniform prior on gastro hospitalisation: U[0,1]
-  log.prior.gastro_hospitalisation4 <- dunif(exp(parameters[["gastro_hospitalisation_4"]]), min = 0, max = 0.3, log = TRUE)
-
-  ## uniform prior on gastro hospitalisation: U[0,1] was 0.9
-  log.prior.gastro_gp_attend_1 <- dunif(exp(parameters[["gastro_gp_attend_1"]]), min = 0, max = 0.4, log = TRUE)
-  # log.prior.gastro_gp_attend_1 <- dnorm(exp(parameters[["gastro_gp_attend_1"]]), mean = 0.05, sd = 0.032, log = TRUE)
-  
-  ## uniform prior on gastro hospitalisation: U[0,1] was 0.9
-  log.prior.gastro_gp_attend_2 <- dunif(exp(parameters[["gastro_gp_attend_2"]]), min = 0, max = 0.4, log = TRUE)
-  # log.prior.gastro_gp_attend_2 <- dnorm(exp(parameters[["gastro_gp_attend_2"]]), mean = 0.05, sd = 0.032, log = TRUE)
+  ## uniform prior on gastro hospitalisation
+  log.prior.gastro_gp_attend_2 <- dunif(parameters[["gastro_gp_attend_2"]], min = log(0.0001), max = log(0.5), log = TRUE)
 
   log.sum <- log.prior.w1
   + log.prior.sigma
-  + log.prior.surveillance_report_1
-  + log.prior.surveillance_report_2
-  + log.prior.surveillance_report_3
-  + log.prior.surveillance_report_4
+  + log.prior.surveillance_report_1_summer
+  + log.prior.surveillance_report_1_winter
+  + log.prior.surveillance_report_2_summer
+  + log.prior.surveillance_report_2_winter
+  + log.prior.surveillance_report_3_summer
+  + log.prior.surveillance_report_3_winter
+  + log.prior.surveillance_report_4_summer
+  + log.prior.surveillance_report_4_winter
   + log.prior.w2
   + log.prior.w3
   + log.prior.delta 

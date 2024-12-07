@@ -173,26 +173,49 @@ a_hes_aki_spell <- a_hes_diagnosis_epi %>%
     age_at_admission = year - yob,
     gender = case_when(gender == "1" ~ "Male",
                     gender == "2" ~ "Female"),
-    aki_day_3 = case_when(aki_day < 4 ~ "0-3",
-                          aki_day > 3 & aki_day < 8 ~ "4-7",
+    aki_day_3 = case_when(aki_day < 3 ~ "0-2",
+                          aki_day > 2 & aki_day < 8 ~ "3-7",
                           aki_day > 7 ~ ">7"),
-    aki_day_3 = factor(aki_day_3, levels = c("0-3", "4-7", ">7")),
+    aki_day_3 = factor(aki_day_3, levels = c("0-2", "3-7", ">7")),
   ) |> 
   group_by(patid, spno) |> 
   arrange(epistart) |> 
-  mutate(id = row_number()) |>          # selecting first episode of AKI in the admission
+  mutate(id = row_number()) |>          # identifying first episode of AKI in the admission
   ungroup() |> 
   filter(year > 2012,
          year < 2020)
 
 a_hes_aki_spell |> 
-  filter(id == 1,
+  filter(id == 1,                         # selecting first episode of AKI in the admission
          !is.na(aki_day_3),
          !is.na(age_at_admission)) |>
   write_parquet(file.path(data_files_path, "a_hes_aki_spell.parquet"))
 
 a_hes_aki_spell |>
-  filter(id == 1,
-         aki_day_3 == "0-3",
+  filter(id == 1,               # selecting first episode of AKI in the admission               
+         aki_day_3 == "0-2",
          !is.na(age_at_admission)) |>
   write_parquet(file.path(data_files_path, "a_hes_aki_spell_community.parquet"))
+
+a_hes_aki_spell |>
+  filter(id == 1,
+         aki_day_3 == "0-2",
+         !is.na(age_at_admission),
+         d_order_2 == "Primary" | d_order_2 == "Secondary") |>
+  write_parquet(file.path(data_files_path, "a_hes_aki_spell_community_position_primary_secondary.parquet"))
+
+# a_hes_aki_spell |>
+#   filter(id == 1,
+#          !is.na(aki_day_3),
+#          !is.na(age_at_admission)) |>
+#   count(aki_day_3)
+# 
+# a_hes_aki_spell |>
+#   filter(id == 1,
+#          !is.na(age_at_admission)) |>
+#   mutate(aki_day_3 = case_when(aki_day < 4 ~ "0-3",
+#                                    aki_day > 3 & aki_day < 8 ~ "4-7",
+#                                    aki_day > 7 ~ ">7"),
+#              aki_day_3 = factor(aki_day_3, levels = c("0-3", "4-7", ">7"))) |>
+#   count(aki_day_3) |>
+#   summarise(n = sum(n))

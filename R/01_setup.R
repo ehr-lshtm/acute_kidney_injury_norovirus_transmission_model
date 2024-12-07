@@ -42,7 +42,10 @@ p_load(
   hexbin,
   flextable,
   progress,
-  officer
+  officer,
+  lhs,
+  tidyverse,
+  NHPoisson
 )
 
 # if(!require("pak")) install.packages("pak")

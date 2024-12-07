@@ -7,6 +7,8 @@ source("R/02_observation_data.R")
 source("R/03_model_function.R")
 
 source("R/04_likelihood_prior_functions.R")
+source("R/04_likelihood_prior_functions_negbin.R")
+source("R/04_likelihood_prior_functions_quasipoisson.R")
 
 source("R/fixed_parameters.R")
 
@@ -22,7 +24,8 @@ par = list(
   gamma = gamma,
   n_age_groups = n_age_groups,
   rho = 0.05,
-  aging = aging
+  aging = aging,
+  season_amp_over65 = 1
   )
 
 par[["contacts"]] <- uk_contact_rate_matrix
@@ -32,83 +35,118 @@ init.state <- init_matrix
 
 times <- 11000
 
+knots_number = 3
+
 # initial thetas
+
+# starting.value <-
+#   c(
+#     season_amp_over65 = 1.0,
+#     sigma = 0.78, 
+#     surveillance_report_1 = 0.002,
+#     surveillance_report_2 = 0.0004,
+#     surveillance_report_3 = 0.00084, 
+#     season_amp = 2.5, 
+#     season_offset = 15, 
+#     aki_hospitalisation_4 = log(0.4), 
+#     gastro_hospitalisation_4 = log(0.05), 
+#     gastro_gp_attend_1 = log(0.4),
+#     gastro_gp_attend_2 = log(0.35), 
+#     D_immun = 8.0,
+#     probT_under5 = log(0.22), 
+#     probT_over5 = log(0.04)
+#     )
 
 starting.value <-
   c(
-    season_amp_over65 = 1.0,
-    sigma = 0.78, #0.76, #0.85, #0.78, #0.95, changed
-    surveillance_report_1 = 0.002,
-    surveillance_report_2 = 0.0004,
-    surveillance_report_3 = 0.00084, #0.0007,
-    surveillance_report_4 = 0.015, #0.008, #0.015, #0.016, #0.018, #0.005, #0.05, changed
-    season_amp = 3.9, #3.5, #3, #1.32, # 5.1, # 3.3,
-    season_offset = 6.4, #2.7, #7.8, #7.0, #5.0, #0.2, # 0.08, changed
-    aki_hospitalisation_4 = log(0.35), #log(0.24), #log(0.35), #log(0.24), #log(0.2), #log(0.1), #log(0.25), changed
-    gastro_hospitalisation_4 = log(0.05), #log(0.1), #log(0.13), #log(0.042), #log(0.037), #log(0.06), changed
-    gastro_gp_attend_1 = log(0.4), #log(0.35), #log(0.2), #log(0.05),
-    gastro_gp_attend_2 = log(0.32), #log(0.27), #log(0.23) #log(0.2) #log(0.05)
-    D_immun = 8.1, #6.2, #4.5, #7.7 #11, #15, #6.2, #7, #7.0, changed
-    probT_under5 = log(0.20), #log(0.25), #log(0.21), #log(0.2), #log(0.28), #1.5, #2.15, changed
-    probT_over5 = log(0.04) #log(0.028), #3.2, #2.92, changed
-    )
+    sigma = 0.78, 
+    surveillance_report_1_summer = 0.002,
+    surveillance_report_1_winter = 0.002,
+    surveillance_report_2_summer = 0.0004,
+    surveillance_report_2_winter = 0.0004,
+    surveillance_report_3_summer = 0.00084, 
+    surveillance_report_3_winter = 0.00084, 
+    surveillance_report_4_summer = 0.0035, 
+    surveillance_report_4_winter = 0.026, 
+    season_amp = 2.5, 
+    season_offset = 15, 
+    aki_hospitalisation_4 = log(0.05), 
+    gastro_hospitalisation_4 = log(0.05), 
+    gastro_gp_attend_1 = log(0.4),
+    gastro_gp_attend_2 = log(0.35), 
+    D_immun = 8.0,
+    probT_under5 = log(0.22), 
+    probT_over5 = log(0.04)
+  )
 
 # diagonal elements of the covariance matrix for the Gaussian proposal
                  
 prop.sd <-
   c(
-    season_amp_over65 = 0.02,
+    # season_amp_over65 = 0.01, 
     sigma = 0.0015,
-    surveillance_report_1 = 0.00002,
-    surveillance_report_2 = 0.00001,
-    surveillance_report_3 = 0.00001,
-    surveillance_report_4 = 0.00005,
-    season_amp = 0.06, #0.0479,#0.14, #0.054
-    season_offset = 0.06, #0.6, #0.068,#0.2,
-    aki_hospitalisation_4 = 0.095, #0.01 #exp(0.01),
-    gastro_hospitalisation_4 = 0.095, #0.01, #0.095,
-    gastro_gp_attend_1 = 0.005, #0.007, #0.002,
-    gastro_gp_attend_2 = 0.005, #0.007 #0.002
-    D_immun = 0.05, #0.1 #0.009, #0.07, #0.04
-    probT_under5 = 0.0012, # 0.001, #0.005, #0.02, #0.009, #0.03, #0.02,#0.06,
-    probT_over5 = 0.0015 #0.001, #0.005, #0.02, #0.008, #0.007, #0.00995,#0.029
+    surveillance_report_1_summer = 0.00002,
+    surveillance_report_1_winter = 0.00002,
+    surveillance_report_2_summer = 0.00001,
+    surveillance_report_2_winter = 0.00001,
+    surveillance_report_3_summer = 0.00001,
+    surveillance_report_3_winter = 0.00001,
+    surveillance_report_4_summer = 0.00002,
+    surveillance_report_4_winter = 0.00002,
+    season_amp = 0.02,
+    season_offset = 0.1, 
+    aki_hospitalisation_4 = 0.095, 
+    gastro_hospitalisation_4 = 0.095, 
+    gastro_gp_attend_1 = 0.005, 
+    gastro_gp_attend_2 = 0.002, 
+    D_immun = 0.15, 
+    probT_under5 = 0.012, 
+    probT_over5 = 0.015
   )
 
 # lower and upper limits of each parameter
 lower <- c(
-  season_amp_over65 = 0,
+  # season_amp_over65 = 0,
   sigma = 0.6,
-  surveillance_report_1 = 0,
-  surveillance_report_2 = 0,
-  surveillance_report_3 = 0,
-  surveillance_report_4 = 0, #0.015,
+  surveillance_report_1_summer = 0,
+  surveillance_report_1_winter = 0,
+  surveillance_report_2_summer = 0,
+  surveillance_report_2_winter = 0,
+  surveillance_report_3_summer = 0,
+  surveillance_report_3_winter = 0,
+  surveillance_report_4_summer = 0,
+  surveillance_report_4_winter = 0,
   season_amp = 0,
   season_offset = 0,
-  aki_hospitalisation_4 = -Inf,
-  gastro_hospitalisation_4 = -Inf,
-  gastro_gp_attend_1 = -Inf,
-  gastro_gp_attend_2 = -Inf,
-  D_immun = 0,
-  probT_under5 = -Inf,
-  probT_over5 = -Inf
+  aki_hospitalisation_4 = log(0.0001), # bound so that transformed value is no lower than 0
+  gastro_hospitalisation_4 = log(0.0001),  # bound so that transformed value is no lower than 0
+  gastro_gp_attend_1 = log(0.0001),  # bound so that transformed value is no lower than 0
+  gastro_gp_attend_2 = log(0.0001),  # bound so that transformed value is no lower than 0
+  D_immun = 0.5,
+  probT_under5 = log(0.0001),  # bound so that transformed value is no lower than 0
+  probT_over5 = log(0.0001) # bound so that transformed value is no lower than 0
 )
 
 upper <- c(
-  season_amp_over65 = Inf,
+  # season_amp_over65 = 10,
   sigma = 0.9,
-  surveillance_report_1 = Inf,
-  surveillance_report_2 = Inf,
-  surveillance_report_3 = Inf,
-  surveillance_report_4 = Inf,
-  season_amp = Inf,
-  season_offset = Inf,
-  aki_hospitalisation_4 = Inf,
-  gastro_hospitalisation_4 = Inf,
-  gastro_gp_attend_1 = Inf,
-  gastro_gp_attend_2 = Inf,
-  D_immun = 12,
-  probT_under5 = Inf,
-  probT_over5 = Inf
+  surveillance_report_1_summer = 0.01,
+  surveillance_report_1_winter = 0.02,
+  surveillance_report_2_summer = 0.01,
+  surveillance_report_2_winter = 0.02,
+  surveillance_report_3_summer = 0.01,
+  surveillance_report_3_winter = 0.02,
+  surveillance_report_4_summer = 0.02,
+  surveillance_report_4_winter = 0.06,
+  season_amp = 10,
+  season_offset = 50,
+  aki_hospitalisation_4 = log(0.75), # bound so that transformed value is no higher than 0.5
+  gastro_hospitalisation_4 = log(0.5), # bound so that transformed value is no higher than 0.4
+  gastro_gp_attend_1 = log(0.5), # bound so that transformed value is no higher than 0.5
+  gastro_gp_attend_2 = log(0.5), # bound so that transformed value is no higher than 0.5
+  D_immun = 14,
+  probT_under5 = log(0.44), # bound so that transformed value is no higher than 0.44
+  probT_over5 = log(0.114) # bound so that transformed value is no higher than 0.114
 )
 
 # additional parameters for the adaptive MCMC, see ?mcmcMh for more details
@@ -117,9 +155,9 @@ adaptSizeCooling <- 0.99
 adaptShapeStart <- 500
 
 # number of iterations for the MCMC
-iter <- 500000
+iter <- 5000
 
-set.seed(123)
+# set.seed(1234)
 
 mcmc_trace <-
   mcmcMh(
@@ -131,7 +169,7 @@ mcmc_trace <-
     adaptSizeStart = adaptSizeStart,
     adaptShapeStart = adaptShapeStart,
     adaptSizeCooling = adaptSizeCooling,
-    maxScalingSd = 1.5,
+    maxScalingSd = 3,
     verbose = FALSE
   )
 
@@ -153,11 +191,20 @@ my_trace_df[, gastro_gp_attend_1 := exp(gastro_gp_attend_1)]
 my_trace_df[, gastro_gp_attend_2 := exp(gastro_gp_attend_2)]
 
 tail(my_trace_df)
+tail(my_trace)
 
 params_trace <- mcmc(my_trace_df[,1:15])
 log_density_trace <- mcmc(my_trace_df[,16])
 
 rmarkdown::render("R/06_mcmc_outputs.R", output_dir = ".", intermediates_dir = ".", output_file = paste0("mcmc_outputs", paste0(gsub("-", "", tolower(Sys.Date())), "_", format(Sys.time(), "%H%M"))))
+
+# Save
+saveRDS(my_trace, "my_trace_wiht_differential_reporting.rds")
+
+# Load
+load_my_trace <- readRDS("my_trace.rds")
+
+# load_my_trace <- fread("Z:/GPRD_GOLD/Hikaru/mcmc/my_trace_19072024.txt")
 
 # parallel mcmc
 
