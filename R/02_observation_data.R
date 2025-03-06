@@ -182,7 +182,8 @@ observation_data <- noro_data |>
   left_join(aki_hosp_spell, by = "time") |> 
   left_join(gastro_hosp_spell, by = "time") |> 
   left_join(gastro_gp_attendance, by = "time") |> 
-  mutate(week = week(week_date))
+  mutate(week = week(week_date)) |> 
+  filter(!time == 364)
 
 ## ## ## ## ## ## ## ## ## ## ## ## ## ## ## ## ## ## ## ## ## ## ## ## ## ## ## ## ## ## ## ## ## ## 
 ## ## ## ## ## ## ## ## ## ## ## ## ## ## ## ## ## ## ## ## ## ## ## ## ## ## ## ## ## ## ## ## ## ## 
