@@ -6,28 +6,37 @@
 log_prior_sum <- function(parameters, log = FALSE) {
   
   ## uniform prior surveillance report 0-4
-  log.prior.surveillance_report_1_summer <- dunif(parameters[["surveillance_report_1_summer"]], min = 0, max = 0.01, log = TRUE)
-
-    ## uniform prior surveillance report 0-4
-  log.prior.surveillance_report_1_winter <- dunif(parameters[["surveillance_report_1_winter"]], min = 0, max = 0.01, log = TRUE)
+  log.prior.surveillance_report_1 <- dunif(parameters[["surveillance_report_1"]], min = 0, max = 0.06, log = TRUE)
 
   ## uniform prior surveillance report 5-14
-  log.prior.surveillance_report_2_summer <- dunif(parameters[["surveillance_report_2_summer"]], min = 0, max = 0.01, log = TRUE)
+  # log.prior.surveillance_report_2 <- dunif(parameters[["surveillance_report_2"]], min = 0, max = 0.06, log = TRUE)
   
-  ## uniform prior surveillance report 5-14
-  log.prior.surveillance_report_2_winter <- dunif(parameters[["surveillance_report_2_winter"]], min = 0, max = 0.01, log = TRUE)
-
   ## uniform prior surveillance report 15-64 summer
-  log.prior.surveillance_report_3_summer <- dunif(parameters[["surveillance_report_3_summer"]], min = 0, max = 0.01, log = TRUE)
-
-    ## uniform prior surveillance report 15-64 winter
-  log.prior.surveillance_report_3_winter <- dunif(parameters[["surveillance_report_3_winter"]], min = 0, max = 0.01, log = TRUE)
+  log.prior.surveillance_report_3 <- dunif(parameters[["surveillance_report_3"]], min = 0, max = 0.06, log = TRUE)
+  
+  # ## uniform prior surveillance report 0-4
+  # log.prior.surveillance_report_1_summer <- dunif(parameters[["surveillance_report_1_summer"]], min = 0, max = 0.06, log = TRUE)
+  # 
+  #   ## uniform prior surveillance report 0-4
+  # log.prior.surveillance_report_1_winter <- dunif(parameters[["surveillance_report_1_winter"]], min = 0, max = 0.06, log = TRUE)
+  # 
+  # ## uniform prior surveillance report 5-14
+  # log.prior.surveillance_report_2_summer <- dunif(parameters[["surveillance_report_2_summer"]], min = 0, max = 0.06, log = TRUE)
+  # 
+  # ## uniform prior surveillance report 5-14
+  # log.prior.surveillance_report_2_winter <- dunif(parameters[["surveillance_report_2_winter"]], min = 0, max = 0.06, log = TRUE)
+  # 
+  # ## uniform prior surveillance report 15-64 summer
+  # log.prior.surveillance_report_3_summer <- dunif(parameters[["surveillance_report_3_summer"]], min = 0, max = 0.06, log = TRUE)
+  # 
+  #   ## uniform prior surveillance report 15-64 winter
+  # log.prior.surveillance_report_3_winter <- dunif(parameters[["surveillance_report_3_winter"]], min = 0, max = 0.06, log = TRUE)
 
   ## uniform prior surveillance reprot 65+ summer
-  log.prior.surveillance_report_4_summer <- dunif(parameters[["surveillance_report_4_summer"]], min = 0, max = 0.02, log = TRUE)
+  log.prior.surveillance_report_4_summer <- dunif(parameters[["surveillance_report_4_summer"]], min = 0, max = 0.06, log = TRUE)
 
   ## uniform prior surveillance reprot 65+ winter
-  log.prior.surveillance_report_4_winter <- dunif(parameters[["surveillance_report_4_winter"]], min = 0, max = 0.06, log = TRUE)
+  log.prior.surveillance_report_4_winter <- dunif(parameters[["surveillance_report_4_winter"]], min = 0, max = 0.1, log = TRUE)
 
   ## log normal prior on proportion infections symptomatic
   log.prior.sigma <- dnorm(parameters[["sigma"]], mean = 0.75, sd = 0.075, log = TRUE)
@@ -39,10 +48,10 @@ log_prior_sum <- function(parameters, log = FALSE) {
   log.prior.w2<- dunif((parameters[["season_offset"]]), min = 0, max = 50, log = TRUE)
   
   ## uniform prior on multiplication factor for over 65 seasonal amplitude period
-  log.prior.w3<- dunif(parameters[["season_amp_over65"]], min = 0, max = 10, log = TRUE)
+  # log.prior.w3<- dunif(parameters[["season_amp_over65"]], min = 0, max = 10, log = TRUE)
   
   ## uniform prior on immunity waning period
-  log.prior.delta <- dunif(parameters[["D_immun"]], min = 0.5, max = 14, log = TRUE)
+  log.prior.delta <- dunif(parameters[["D_immun"]], min = 0.5, max = 12, log = TRUE)
 
   ## log normal prior on probability transmission under 5
   log.prior.q1 <- dnorm(parameters[["probT_under5"]], mean = log(0.21), sd = 0.115, log = TRUE)
@@ -51,36 +60,54 @@ log_prior_sum <- function(parameters, log = FALSE) {
   log.prior.q2 <- dnorm(parameters[["probT_over5"]], mean = log(0.05), sd = 0.032, log = TRUE)
 
   ## uniform prior on aki hospitalisation
-  log.prior.aki_hospitalisation4 <- dunif(parameters[["aki_hospitalisation_4"]], min = log(0.0001), max = log(0.5), log = TRUE)
+  # log.prior.aki_hospitalisation4 <- dunif(parameters[["aki_hospitalisation_4"]], min = log(0.0001), max = log(0.5), log = TRUE)
+
+  ## uniform prior on aki hospitalisation
+  # log.prior.aki_hospitalisation4_summer <- dunif(parameters[["aki_hospitalisation_4_summer"]], min = log(0.0001), max = log(0.75), log = TRUE)
+
+    ## uniform prior on aki hospitalisation
+  log.prior.aki_hospitalisation4_winter <- dunif(parameters[["aki_hospitalisation_4_winter"]], min = log(0.0001), max = log(0.75), log = TRUE)
 
   ## uniform prior on gastro hospitalisation
-  log.prior.gastro_hospitalisation4 <- dunif(parameters[["gastro_hospitalisation_4"]], min = log(0.0001), max = log(0.5), log = TRUE)
+  # log.prior.gastro_hospitalisation4 <- dunif(parameters[["gastro_hospitalisation_4"]], min = log(0.0001), max = log(0.5), log = TRUE)
+
+    ## uniform prior on gastro hospitalisation
+  # log.prior.gastro_hospitalisation4_summer <- dunif(parameters[["gastro_hospitalisation_4_summer"]], min = log(0.0001), max = log(0.5), log = TRUE)
+
+    ## uniform prior on gastro hospitalisation
+  log.prior.gastro_hospitalisation4_winter <- dunif(parameters[["gastro_hospitalisation_4_winter"]], min = log(0.0001), max = log(0.5), log = TRUE)
 
   ## uniform prior on gastro hospitalisation
   log.prior.gastro_gp_attend_1 <- dunif(parameters[["gastro_gp_attend_1"]], min = log(0.0001), max = log(0.5), log = TRUE)
 
   ## uniform prior on gastro hospitalisation
-  log.prior.gastro_gp_attend_2 <- dunif(parameters[["gastro_gp_attend_2"]], min = log(0.0001), max = log(0.5), log = TRUE)
+  # log.prior.gastro_gp_attend_2 <- dunif(parameters[["gastro_gp_attend_2"]], min = log(0.0001), max = log(0.75), log = TRUE)
 
   log.sum <- log.prior.w1
   + log.prior.sigma
-  + log.prior.surveillance_report_1_summer
-  + log.prior.surveillance_report_1_winter
-  + log.prior.surveillance_report_2_summer
-  + log.prior.surveillance_report_2_winter
-  + log.prior.surveillance_report_3_summer
-  + log.prior.surveillance_report_3_winter
+  + log.prior.surveillance_report_1
+  # + log.prior.surveillance_report_2
+  + log.prior.surveillance_report_3
+  # + log.prior.surveillance_report_1_winter
+  # + log.prior.surveillance_report_2_summer
+  # + log.prior.surveillance_report_2_winter
+  # + log.prior.surveillance_report_3_summer
+  # + log.prior.surveillance_report_3_winter
   + log.prior.surveillance_report_4_summer
   + log.prior.surveillance_report_4_winter
   + log.prior.w2
-  + log.prior.w3
+  # + log.prior.w3
   + log.prior.delta 
   + log.prior.q1
   + log.prior.q2
-  + log.prior.aki_hospitalisation4 
-  + log.prior.gastro_hospitalisation4
+  # + log.prior.aki_hospitalisation4
+  # + log.prior.aki_hospitalisation4_summer
+  + log.prior.aki_hospitalisation4_winter
+  # + log.prior.gastro_hospitalisation4
+  # + log.prior.gastro_hospitalisation4_summer
+  + log.prior.gastro_hospitalisation4_winter
   + log.prior.gastro_gp_attend_1
-  + log.prior.gastro_gp_attend_2
+  # + log.prior.gastro_gp_attend_2
 
   return(ifelse(log, log.sum, exp(log.sum)))
 }
@@ -102,7 +129,7 @@ log_likelihood_sum <- function(parameters, init.state, times, data, log = FALSE)
   log_likelihoods <- traj[data, on = "time"][
     , c(
       "log_likelihood_noro_obs_1",
-        "log_likelihood_noro_obs_2",
+        # "log_likelihood_noro_obs_2",
         "log_likelihood_noro_obs_3",
         "log_likelihood_noro_obs_4",
         # "log_likelihood_aki_hosp_1", 
@@ -113,8 +140,8 @@ log_likelihood_sum <- function(parameters, init.state, times, data, log = FALSE)
         # "log_likelihood_gastro_hosp_2",
         # "log_likelihood_gastro_hosp_3",
         "log_likelihood_gastro_hosp_4",
-        "log_likelihood_gastro_gp_1",
-        "log_likelihood_gastro_gp_2"
+        "log_likelihood_gastro_gp_1"
+        # "log_likelihood_gastro_gp_2"
         ) :=
       {
         log_likelihood_noro_obs_1 <- dpois(x = noro_obs_1, lambda = noro_model_1, log = TRUE)
