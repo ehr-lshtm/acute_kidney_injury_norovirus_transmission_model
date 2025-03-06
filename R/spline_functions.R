@@ -1,7 +1,7 @@
 # spline functions for aki hospitalisations observations
 
 # specify spline
-spl <-bs(observation_data$time, degree=knots_number)
+spl <-bs(observation_data$time, degree=3)
 
 # aki hosp splines
 
@@ -58,9 +58,9 @@ median_value <- median(gastro_gp_model_spl_pred1$gastro_gp_model_spl_pred1)
 gastro_gp_model_spl_pred1[, `:=`(median = median_value,
                                  gastro_gp_model_spl_pred1_diff = gastro_gp_model_spl_pred1 - median_value)]
 gastro_gp_model_spl_pred1[, time := 52:(51 + .N)]
-gastro_gp_model_spl_pred1_diff <- gastro_gp_model_spl_pred1[, .(gastro_gp_model_spl_pred1_diff, time)]
+gastro_gp_model_spl_pred1_diff <- gastro_gp_model_spl_pred1[, .(gastro_gp_model_spl_pred1_diff,gastro_gp_model_spl_pred1,  time)]
 gastro_gp_model_spl_pred1_diff1.1 <- data.table(time = 0:51, gastro_gp_model_spl_pred1_diff = rep(NA, 52))
-gastro_gp_model_spl_pred1_diff <- rbindlist(list(gastro_gp_model_spl_pred1_diff1.1, gastro_gp_model_spl_pred1_diff), use.names = TRUE)
+gastro_gp_model_spl_pred1_diff <- rbindlist(list(gastro_gp_model_spl_pred1_diff1.1, gastro_gp_model_spl_pred1_diff),fill = TRUE, use.names = TRUE)
 setDT(gastro_gp_model_spl_pred1_diff)
 
 # gastro_gp_model_spl1 <- glm(gastro_gp_obs_1 ~ spl,observation_data,family=quasipoisson)
