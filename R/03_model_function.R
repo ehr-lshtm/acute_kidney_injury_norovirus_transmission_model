@@ -76,17 +76,30 @@ simulate <- function(parameters, init.state, times, age.incidence = FALSE) {
   
   # transform aki parameter
   
-  aki_hosp_param4 <- exp(parameters[["aki_hospitalisation_4"]])
+  # aki_hosp_param4 <- exp(parameters[["aki_hospitalisation_4"]])
+  aki_hosp_param4_winter <- exp(parameters[["aki_hospitalisation_4_winter"]])
+  aki_hosp_param4_summer <- 0
+  
+    # Calculate seasonally-varying parameter
+  summarized_data[, seasonal_param := (0.5 * (1 + cos(2 * pi * (week_number - 1)/52))) * aki_hosp_param4_winter +
+                    (0.5 * (1 - cos(2 * pi * (week_number - 1)/52))) * aki_hosp_param4_summer]
+  
   # aki_hosp_overall <- parameters[["aki_hospitalisation_overall"]]
     
   # transform gastro parameter
   
-  gastro_hosp_param4 <- exp(parameters[["gastro_hospitalisation_4"]])
+  # gastro_hosp_param4 <- exp(parameters[["gastro_hospitalisation_4"]])
+  gastro_hosp_param4_winter <- exp(parameters[["gastro_hospitalisation_4_winter"]])
+  gastro_hosp_param4_summer <- 0
+  
+  # Calculate seasonally-varying parameter
+  summarized_data[, seasonal_param_gastro := (0.5 * (1 + cos(2 * pi * (week_number - 1)/52))) * gastro_hosp_param4_winter +
+                    (0.5 * (1 - cos(2 * pi * (week_number - 1)/52))) * gastro_hosp_param4_summer]
   
   # transform gastro gp parameter
   
   gastro_gp_param1 <- exp(parameters[["gastro_gp_attend_1"]])
-  gastro_gp_param2 <- exp(parameters[["gastro_gp_attend_2"]])
+  # gastro_gp_param2 <- exp(parameters[["gastro_gp_attend_2"]])
 
   
   # left join spl data
@@ -94,44 +107,56 @@ simulate <- function(parameters, init.state, times, age.incidence = FALSE) {
   summarized_data <- summarized_data[model_spl_pred4, on = "time"]
   # summarized_data <- summarized_data[gastro_model_spl_pred4_diff, on = "time"]
   summarized_data <- summarized_data[gastro_model_spl_pred4, on = "time"]
-  summarized_data <- summarized_data[gastro_gp_model_spl_pred2_diff, on = "time"]
+  # summarized_data <- summarized_data[gastro_gp_model_spl_pred2_diff, on = "time"]
   # summarized_data <- summarized_data[gastro_gp_model_spl_pred2, on = "time"]
   summarized_data <- summarized_data[gastro_gp_model_spl_pred1_diff, on = "time"]
   # summarized_data <- summarized_data[gastro_gp_model_spl_pred1, on = "time"]
   
   # Calculate noro_value and aki_hosp_model_4
   summarized_data[, `:=` (
-    noro_model_1 = infectious_symp_1 * (
-      (0.5 * (1 + cos(2 * pi * (week_number - 1)/52))) * parameters[["surveillance_report_2_winter"]] +
-        (0.5 * (1 - cos(2 * pi * (week_number - 1)/52))) * parameters[["surveillance_report_2_summer"]]
-    ),
-    noro_model_2 = infectious_symp_2 * (
-      (0.5 * (1 + cos(2 * pi * (week_number - 1)/52))) * parameters[["surveillance_report_2_winter"]] +
-        (0.5 * (1 - cos(2 * pi * (week_number - 1)/52))) * parameters[["surveillance_report_2_summer"]]
-    ),
-    noro_model_3 = infectious_symp_3 * (
-      (0.5 * (1 + cos(2 * pi * (week_number - 1)/52))) * parameters[["surveillance_report_3_winter"]] +
-        (0.5 * (1 - cos(2 * pi * (week_number - 1)/52))) * parameters[["surveillance_report_3_summer"]]
-    ),
+    noro_model_1 = infectious_symp_1 * parameters[["surveillance_report_1"]],
+    # noro_model_2 = infectious_symp_2 * parameters[["surveillance_report_2"]],
+    noro_model_3 = infectious_symp_3 * parameters[["surveillance_report_3"]],
+    # noro_model_4 = infectious_symp_4 * parameters[["surveillance_report_4"]],
+    # noro_model_1 = infectious_symp_1 * (
+    #   (0.5 * (1 + cos(2 * pi * (week_number - 1)/52))) * parameters[["surveillance_report_2_winter"]] +
+    #     (0.5 * (1 - cos(2 * pi * (week_number - 1)/52))) * parameters[["surveillance_report_2_summer"]]
+    # ),
+    # noro_model_2 = infectious_symp_2 * (
+    #   (0.5 * (1 + cos(2 * pi * (week_number - 1)/52))) * parameters[["surveillance_report_2_winter"]] +
+    #     (0.5 * (1 - cos(2 * pi * (week_number - 1)/52))) * parameters[["surveillance_report_2_summer"]]
+    # ),
+    # noro_model_3 = infectious_symp_3 * (
+    #   (0.5 * (1 + cos(2 * pi * (week_number - 1)/52))) * parameters[["surveillance_report_3_winter"]] +
+    #     (0.5 * (1 - cos(2 * pi * (week_number - 1)/52))) * parameters[["surveillance_report_3_summer"]]
+    # ),
     noro_model_4 = infectious_symp_4 * (
       (0.5 * (1 + cos(2 * pi * (week_number - 1)/52))) * parameters[["surveillance_report_4_winter"]] +
         (0.5 * (1 - cos(2 * pi * (week_number - 1)/52))) * parameters[["surveillance_report_4_summer"]]
     ),
-    # noro_model_4 = infectious_symp_4 * parameters[["surveillance_report_4"]],
     # noro_model = (exposed_4 / init.state[4, 1] * 1000000) * parameters[["surveillance_report"]],
     # test = (((infectious_symp_4 / init.state[4, 1] * 100000) + model_spl_pred4_diff)),
     # aki_hosp_model_4 = ((((infectious_symp_4 / init.state[4, 1] * 100000) + model_spl_pred4_diff))*aki_hosp_param4),
     # aki_hosp_model_4 = ((infectious_symp_4 * aki_hosp_param4) - median(infectious_symp_4 * aki_hosp_param4) + model_spl_pred4),
-    aki_hosp_model_4 = ((((infectious_symp_4 / init.state[4, 1] * 100000) * aki_hosp_param4)
-                                - median((infectious_symp_4 / init.state[4, 1] * 100000) * aki_hosp_param4)
+    aki_hosp_model_4 = ((((infectious_symp_4 / init.state[4, 1] * 100000) * seasonal_param)
+                                - median((infectious_symp_4 / init.state[4, 1] * 100000) * seasonal_param)
     ) + model_spl_pred4),
+    # aki_hosp_model_4 = ((((infectious_symp_4 / init.state[4, 1] * 100000) * aki_hosp_param4)
+    #                             - median((infectious_symp_4 / init.state[4, 1] * 100000) * aki_hosp_param4)
+    # ) + model_spl_pred4),
+    # aki_hosp_model_4 = (# Apply to normalized incidence rate directly
+    #   (infectious_symp_4 / init.state[4, 1] * 100000) * seasonal_param + model_spl_pred4
+    # ), 
     # aki_hosp_model_4 = (((((infectious_symp_4 / init.state[4, 1] * 100000)*aki_hosp_param4) + model_spl_pred4_diff))*aki_hosp_overall),
     # test_gastro_hosp_model_4 = ((((infectious_symp_4 / init.state[4, 1] * 100000) + gastro_model_spl_pred4_diff))),
     # gastro_hosp_model_4 = ((((infectious_symp_4 / init.state[4, 1] * 100000) + gastro_model_spl_pred4_diff))*gastro_hosp_param4),
     # # gastro_hosp_model_4 = ((infectious_symp_4 / init.state[4, 1] * 1000000) * gastro_hosp_param4),
-    gastro_hosp_model_4 = ((((infectious_symp_4 / init.state[4, 1] * 100000) * gastro_hosp_param4)
-                         - median((infectious_symp_4 / init.state[4, 1] * 100000) * gastro_hosp_param4)
+    gastro_hosp_model_4 = ((((infectious_symp_4 / init.state[4, 1] * 100000) * seasonal_param_gastro)
+                         - median((infectious_symp_4 / init.state[4, 1] * 100000) * seasonal_param_gastro)
     ) + gastro_model_spl_pred4),
+    # gastro_hosp_model_4 = ((((infectious_symp_4 / init.state[4, 1] * 100000) * gastro_hosp_param4)
+    #                      - median((infectious_symp_4 / init.state[4, 1] * 100000) * gastro_hosp_param4)
+    # ) + gastro_model_spl_pred4),
     gastro_gp_model_1 = ((((infectious_symp_1 / init.state[1, 1] * 100000) + gastro_gp_model_spl_pred1_diff))*gastro_gp_param1),
     # gastro_gp_model_1 = ((infectious_symp_1 / init.state[1, 1] * 1000000) * gastro_gp_param1),
     # gastro_gp_model_1 = ((((infectious_symp_1 / init.state[1, 1] * 100000) * gastro_gp_param1)
@@ -146,15 +171,15 @@ simulate <- function(parameters, init.state, times, age.incidence = FALSE) {
     #                       - median((infectious_symp_1 / init.state[1, 1] * 100000))
     # ) + gastro_gp_model_spl_pred1),
     # test_gastro_gp_model_2 = ((((infectious_symp_2 / init.state[2, 1] * 100000) + gastro_gp_model_spl_pred2_diff))),
-    gastro_gp_model_2 = ((((infectious_symp_2 / init.state[2, 1] * 100000) + gastro_gp_model_spl_pred2_diff))*gastro_gp_param2),
+    # gastro_gp_model_2 = ((((infectious_symp_2 / init.state[2, 1] * 100000) + gastro_gp_model_spl_pred2_diff))*gastro_gp_param2),
     # gastro_gp_model_2 = ((infectious_symp_2 / init.state[2, 1] * 1000000) * gastro_gp_param2),
     # gastro_gp_model_2 = ((((infectious_symp_2 / init.state[2, 1] * 100000) * gastro_gp_param2)
     #                      - median((infectious_symp_2 / init.state[2, 1] * 100000) * gastro_gp_param2)
     # ) + gastro_gp_model_spl_pred2),
-    # infectious_symp_1 = infectious_symp_1 / init.state[1, 1] * 100000,
-    # infectious_symp_2 = infectious_symp_2 / init.state[2, 1] * 100000,
-    # infectious_symp_3 = infectious_symp_3 / init.state[3, 1] * 100000,
-    # infectious_symp_4 = infectious_symp_4 / init.state[4, 1] * 100000,
+    infectious_symp_1 = infectious_symp_1 / init.state[1, 1] * 100000,
+    infectious_symp_2 = infectious_symp_2 / init.state[2, 1] * 100000,
+    infectious_symp_3 = infectious_symp_3 / init.state[3, 1] * 100000,
+    infectious_symp_4 = infectious_symp_4 / init.state[4, 1] * 100000,
     infectious_symp_1_count = infectious_symp_1,
     infectious_symp_2_count = infectious_symp_2,
     infectious_symp_3_count = infectious_symp_3,
@@ -166,25 +191,25 @@ simulate <- function(parameters, init.state, times, age.incidence = FALSE) {
     
     ######
     
-    aki_hosp_model_4_infection = ((infectious_symp_4 / init.state[4, 1] * 100000) * aki_hosp_param4),
-    aki_hosp_model_4_median = median((infectious_symp_4 / init.state[4, 1] * 100000) * aki_hosp_param4),
-    aki_hosp_model_4_difference = ((((infectious_symp_4 / init.state[4, 1] * 100000) * aki_hosp_param4)
-                                    - median((infectious_symp_4 / init.state[4, 1] * 100000) * aki_hosp_param4)
-    )),
-    gastro_gp_model_2_difference = ((((infectious_symp_4 / init.state[2, 1] * 100000) * gastro_gp_param2)
-                                    - median((infectious_symp_4 / init.state[2, 1] * 100000) * gastro_gp_param2)
-    )),
+    # aki_hosp_model_4_infection = ((infectious_symp_4 / init.state[4, 1] * 100000) * aki_hosp_param4),
+    # aki_hosp_model_4_median = median((infectious_symp_4 / init.state[4, 1] * 100000) * aki_hosp_param4),
+    # aki_hosp_model_4_difference = ((((infectious_symp_4 / init.state[4, 1] * 100000) * aki_hosp_param4)
+    #                                 - median((infectious_symp_4 / init.state[4, 1] * 100000) * aki_hosp_param4)
+    # )),
+    # gastro_gp_model_2_difference = ((((infectious_symp_4 / init.state[2, 1] * 100000) * gastro_gp_param2)
+    #                                 - median((infectious_symp_4 / init.state[2, 1] * 100000) * gastro_gp_param2)
+    # ))
     # aki_hosp_model_4_with_param = (((((infectious_symp_4 / init.state[4, 1] * 100000)*aki_hosp_param4) + model_spl_pred4_diff))),
     # gastro_gp_model_2_infection = ((((infectious_symp_2 / init.state[2, 1] * 100000) + gastro_gp_model_spl_pred2_diff))),
     # gastro_gp_model_2_infection_model_spline = (median((infectious_symp_2 / init.state[2, 1] * 100000)) + gastro_gp_model_spl_pred2_diff),
-    # gastro_gp_model_1_infection = ((((infectious_symp_1 / init.state[1, 1] * 100000) + gastro_gp_model_spl_pred1_diff))),
-    # gastro_gp_model_1_infection_model_spline = (median((infectious_symp_1 / init.state[1, 1] * 100000)) + gastro_gp_model_spl_pred1_diff),
+    gastro_gp_model_1_infection = ((((infectious_symp_1 / init.state[1, 1] * 100000) + gastro_gp_model_spl_pred1_diff))),
+    gastro_gp_model_1_infection_model_spline = (median((infectious_symp_1 / init.state[1, 1] * 100000)) + gastro_gp_model_spl_pred1_diff)
 
-    gastro_hosp_model_4_infection = ((infectious_symp_4 / init.state[4, 1] * 100000) * gastro_hosp_param4),
-    gastro_hosp_model_4_median = median((infectious_symp_4 / init.state[4, 1] * 100000) * gastro_hosp_param4),
-    gastro_hosp_model_4_difference = ((((infectious_symp_4 / init.state[4, 1] * 100000) * gastro_hosp_param4)
-                                    - median((infectious_symp_4 / init.state[4, 1] * 100000) * gastro_hosp_param4)
-    ))
+    # gastro_hosp_model_4_infection = ((infectious_symp_4 / init.state[4, 1] * 100000) * gastro_hosp_param4),
+    # gastro_hosp_model_4_median = median((infectious_symp_4 / init.state[4, 1] * 100000) * gastro_hosp_param4),
+    # gastro_hosp_model_4_difference = ((((infectious_symp_4 / init.state[4, 1] * 100000) * gastro_hosp_param4)
+    #                                 - median((infectious_symp_4 / init.state[4, 1] * 100000) * gastro_hosp_param4)
+    # ))
 
   )]
   
@@ -206,13 +231,13 @@ simulate <- function(parameters, init.state, times, age.incidence = FALSE) {
       recovered_3,
       recovered_4,
       noro_model_1,
-      noro_model_2,
+      # noro_model_2,
       noro_model_3,
       noro_model_4,
       aki_hosp_model_4,
       gastro_hosp_model_4,
-      gastro_gp_model_1,
-      gastro_gp_model_2
+      gastro_gp_model_1
+      # gastro_gp_model_2
       
     )]
   
