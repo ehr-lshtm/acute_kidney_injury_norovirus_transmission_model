@@ -10,11 +10,14 @@ burn_value <- 10000
 
 thin_factor <- 10
 
+source("R/04_likelihood_prior_functions.R")
+source("R/04_likelihood_prior_functions_quasipoisson.R")
+
 # limit AKI defintiion to primary and secondary codes within 0-2 days
 
 parameters_posteriror_function <- function(theta) {
   
-  return(log_posterior_sum_neg_binom(parameters = c(theta, par),
+  return(log_posterior_sum_quasi_pois(parameters = c(theta, par),
                                      init.state = init.state,
                                      times = times,
                                      data = observation_data_sensitivity_primary_secondary_aki,
@@ -49,7 +52,7 @@ my_trace <- my_trace_sen_aki_primary_secondary
 
 parameters_posteriror_function <- function(theta) {
   
-  return(log_posterior_sum_neg_binom(parameters = c(theta, par),
+  return(log_posterior_sum_quasi_pois(parameters = c(theta, par),
                                      init.state = init.state,
                                      times = times,
                                      data = observation_data_sensitivity_any_time,
@@ -79,7 +82,8 @@ my_trace <- my_trace_sen_aki_any
 
 # reduce B-spline to 3 knots
 
-source("R/04_likelihood_prior_functions_negbin.R")
+source("R/04_likelihood_prior_functions.R")
+source("R/04_likelihood_prior_functions_quasipoisson.R")
 
 knots_number = 1
 
