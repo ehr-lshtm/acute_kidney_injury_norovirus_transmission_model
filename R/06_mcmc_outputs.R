@@ -27,9 +27,9 @@ knitr::opts_chunk$set(echo = FALSE,
 
 #' ## Preliminary run
 
-starting.value
+#starting_values[[2]]
 
-prop.sd
+#prop.sd
 
 #' ## Covariance matrix
 
@@ -49,21 +49,21 @@ xyplot( x = log_density_trace)
 
 #' ## effective sample size
 
-# plotEssBurn(my_trace)
+plotEssBurn(my_trace)
 
 #' ## trace without burn in
 
-burn_value <- 10000
+burn_value <- 100000
 
 traceBurn <- burnAndThin(my_trace, burn = burn_value)
 
 traceBurn_df <- burnAndThin(my_trace_df, burn = burn_value)
 traceBurn_params <- burnAndThin(params_trace, burn = burn_value)
-traceBurn_log_density <- mcmc(traceBurn[,16])
+traceBurn_log_density <- mcmc(traceBurn[,14])
 
 effectiveSize(traceBurn)
 
-xyplot( x = traceBurn_params)
+xyplot( x = traceBurn)
 
 plotEssBurn(traceBurn_params)
 
@@ -86,11 +86,11 @@ thin_factor <- 100
 traceBurnThin <- burnAndThin(my_trace, burn = burn_value, thin = thin_factor)
 traceBurnThin_df <- burnAndThin(my_trace_df, burn = burn_value, thin = thin_factor)
 traceBurnThin_params <- burnAndThin(params_trace, burn = burn_value, thin = thin_factor)
-traceBurnThin_log_density <- mcmc(traceBurnThin[,16])
+traceBurnThin_log_density <- mcmc(traceBurnThin[,14])
 
 effectiveSize(traceBurnThin)
 
-xyplot( x = traceBurnThin_params)
+xyplot( x = traceBurnThin)
 
 #' #### logDensity
 
@@ -102,13 +102,13 @@ acfplot(x = traceBurnThin, lag.max = 60)
 
 plotPosteriorDensity(list(unthinned = traceBurn_df, thinned = traceBurnThin_df))
 
-traceBurn_df_aki <- traceBurn_df |> 
-  select(aki_hospitalisation_4) |> 
-  rename('Norovirus linked AKI hospitalisation' = aki_hospitalisation_4)
-
-traceBurnThin_df_aki <- traceBurnThin_df |> 
-  select(aki_hospitalisation_4) |> 
-  rename('Norovirus linked AKI hospitalisation' = aki_hospitalisation_4)
+# traceBurn_df_aki <- traceBurn_df |> 
+#   select(aki_hospitalisation_4) |> 
+#   rename('Norovirus linked AKI hospitalisation' = aki_hospitalisation_4)
+# 
+# traceBurnThin_df_aki <- traceBurnThin_df |> 
+#   select(aki_hospitalisation_4) |> 
+#   rename('Norovirus linked AKI hospitalisation' = aki_hospitalisation_4)
 
 source("R/create_prior_distributions.R")
 
@@ -118,29 +118,29 @@ plotPosteriorDensity(trace = traceBurnThin_df, prior = prior_df)
 
 levelplot(traceBurnThin, col.regions = heat.colors(100), scales=list(x=list(rot=90)))
 
-mcmc_pairs(
-  traceBurnThin_df,
-  pars = c(
-    "sigma",
-    "season_amp",
-    "season_offset",
-    "D_immun",
-    "probT_under5",
-    "probT_over5",
-    "surveillance_report_1",
-    "surveillance_report_2",
-    "surveillance_report_3",
-    "surveillance_report_4_winter",
-    "surveillance_report_4_summer",
-    "aki_hospitalisation_4",
-    "gastro_hospitalisation_4",
-    "gastro_gp_attend_1",
-    "gastro_gp_attend_2"
-  ),
-  diag_fun = "dens",
-  off_diag_fun = "hex",
-  off_diag_args = list(size = 1, alpha = 0.5)
-)
+# mcmc_pairs(
+#   traceBurnThin_df,
+#   pars = c(
+#     "sigma",
+#     "season_amp",
+#     "season_offset",
+#     "D_immun",
+#     "probT_under5",
+#     "probT_over5",
+#     "surveillance_report_1",
+#     "surveillance_report_2",
+#     "surveillance_report_3",
+#     "surveillance_report_4_winter",
+#     "surveillance_report_4_summer",
+#     "aki_hospitalisation_4",
+#     "gastro_hospitalisation_4",
+#     "gastro_gp_attend_1",
+#     "gastro_gp_attend_2"
+#   ),
+#   diag_fun = "dens",
+#   off_diag_fun = "hex",
+#   off_diag_args = list(size = 1, alpha = 0.5)
+# )
 
 # simulate model - assess visual fit
 
@@ -160,16 +160,24 @@ rownames(posterior_table) <- c(
   # "season_amp_over65",
   "sigma",
   "surveillance_report_1",
-  "surveillance_report_2",
+  # "surveillance_report_1_summer",
+  # "surveillance_report_1_winter",
+  # "surveillance_report_2",
+  # "surveillance_report_2_summer",
+  # "surveillance_report_2_winter",
   "surveillance_report_3",
-  "surveillance_report_4_winter",
+  # "surveillance_report_3_summer",
+  # "surveillance_report_3_winter",
   "surveillance_report_4_summer",
+  "surveillance_report_4_winter",
   "season_amp",
   "season_offset",
-  "aki_hospitalisation_4",
-  "gastro_hospitalisation_4",
+  # "aki_hospitalisation_4_summer",
+  "aki_hospitalisation_4_winter",
+  # "gastro_hospitalisation_4_summer",
+  "gastro_hospitalisation_4_winter",
   "gastro_gp_attend_1",
-  "gastro_gp_attend_2",
+  # "gastro_gp_attend_2",
   "D_immun",
   "probT_under5",
   "probT_over5",
@@ -186,10 +194,12 @@ posterior_table <- posterior_table %>%
                     Parameter == "season_offset" ~ ./100,
                     Parameter == "probT_under5" ~ exp(.),
                     Parameter == "probT_over5" ~ exp(.),
-                    Parameter == "aki_hospitalisation_4" ~ exp(.),
-                    Parameter == "gastro_hospitalisation_4" ~ exp(.),
+                    Parameter == "aki_hospitalisation_4_winter" ~ exp(.),
+                    # Parameter == "aki_hospitalisation_4_summer" ~ exp(.),
+                    Parameter == "gastro_hospitalisation_4_winter" ~ exp(.),
+                    # Parameter == "gastro_hospitalisation_4_summer" ~ exp(.),
                     Parameter == "gastro_gp_attend_1" ~ exp(.),
-                    Parameter == "gastro_gp_attend_2" ~ exp(.),
+                    # Parameter == "gastro_gp_attend_2" ~ exp(.),
                     TRUE ~ .
                   ))) |> 
   select(Parameter, theta, q2.5, q97.5)
@@ -202,15 +212,23 @@ parameter_order <- c(
   "season_amp",
   # "season_amp_over65",
   "season_offset",
-  "aki_hospitalisation_4",
-  "gastro_hospitalisation_4",
+  "aki_hospitalisation_4_winter",
+  # "aki_hospitalisation_4_summer",
+  "gastro_hospitalisation_4_winter",
+  # "gastro_hospitalisation_4_summer",
   "surveillance_report_1",
-  "surveillance_report_2",
+  # "surveillance_report_1_winter",
+  # "surveillance_report_1_summer",
+  # "surveillance_report_2",
+  # "surveillance_report_2_winter",
+  # "surveillance_report_2_summer",
   "surveillance_report_3",
+  # "surveillance_report_3_winter",
+  # "surveillance_report_3_summer",
   "surveillance_report_4_winter",
   "surveillance_report_4_summer",
-  "gastro_gp_attend_1",
-  "gastro_gp_attend_2"
+  "gastro_gp_attend_1"
+  # "gastro_gp_attend_2"
 )
 
 posterior_table_image <- posterior_table |> 
@@ -220,13 +238,19 @@ posterior_table_image <- posterior_table |>
          cri = paste0(q2.5, "-", q97.5),
          "Median (95% CrI)" = paste0(theta, " ", paste0("(", cri, ")"))
          ) |>
-  filter(!row_number() %in% c(16)) |> 
+  filter(!row_number() %in% c(14)) |> 
   select(Parameter, `Median (95% CrI)` ) |>
   arrange(factor(Parameter, levels = parameter_order)) |> 
   mutate(Explanation = case_when(
     Parameter == "surveillance_report_1" ~ "Proportion of symptomatic norovirus in 0-4 year olds reported to surveillance",
-    Parameter == "surveillance_report_2" ~ "Proportion of symptomatic norovirus in 5-14 year olds reported to surveillance",
+    # Parameter == "surveillance_report_1_winter" ~ "Proportion of symptomatic norovirus in 0-4 year olds reported to surveillance in the winter",
+    # Parameter == "surveillance_report_1_summer" ~ "Proportion of symptomatic norovirus in 0-4 year olds reported to surveillance in the summer",
+    # Parameter == "surveillance_report_2" ~ "Proportion of symptomatic norovirus in 5-14 year olds reported to surveillance",
+    # Parameter == "surveillance_report_2_winter" ~ "Proportion of symptomatic norovirus in 5-14 year olds reported to surveillance in the winter",
+    # Parameter == "surveillance_report_2_summer" ~ "Proportion of symptomatic norovirus in 5-14 year olds reported to surveillance in the summer",
     Parameter == "surveillance_report_3" ~ "Proportion of symptomatic norovirus in 15-64 year olds reported to surveillance",
+    # Parameter == "surveillance_report_3_winter" ~ "Proportion of symptomatic norovirus in 15-64 year olds reported to surveillance in the winter",
+    # Parameter == "surveillance_report_3_summer" ~ "Proportion of symptomatic norovirus in 15-64 year olds reported to surveillance in the summer",
     Parameter == "surveillance_report_4_winter" ~ "Proportion of symptomatic norovirus in over 65s reported to surveillance in the winter",
     Parameter == "surveillance_report_4_summer" ~ "Proportion of symptomatic norovirus in over 65s reported to surveillance in the summer",
     Parameter == "season_amp" ~ "A term forcing the amplitude of the periodicity in the contact rate",
@@ -234,16 +258,24 @@ posterior_table_image <- posterior_table |>
     # Parameter == "season_amp_over65" ~ "Scaling seasonal amplitude for over 65 seasonality to improve fit",
     Parameter == "probT_under5" ~ "Probability of transmission in under 5s transmitting to under 5s",
     Parameter == "probT_over5" ~ "Probability of transmission transmitting to over 5s",
-    Parameter == "aki_hospitalisation_4" ~ "Proportion of symptomatic norovirus infections linked to an AKI hospitalisation in over 65s",
-    Parameter == "gastro_hospitalisation_4" ~ "Proportion of symptomatic norovirus infections linked to a gastroenteritis hospitalisation in over 65s",
+    Parameter == "aki_hospitalisation_4_winter" ~ "Proportion of symptomatic norovirus infections linked to an AKI hospitalisation in over 65s in the winter",
+    # Parameter == "aki_hospitalisation_4_summer" ~ "Proportion of symptomatic norovirus infections linked to an AKI hospitalisation in over 65s in the summer",
+    Parameter == "gastro_hospitalisation_4_winter" ~ "Proportion of symptomatic norovirus infections linked to a gastroenteritis hospitalisation in over 65s in the winter",
+    # Parameter == "gastro_hospitalisation_4_summer" ~ "Proportion of symptomatic norovirus infections linked to a gastroenteritis hospitalisation in over 65s in the summer",
     Parameter == "gastro_gp_attend_1" ~ "Reporting parameter linking symptomatic norovirus infection in under 5s to all cause gastroenteritis diagnosed in primary care",
-    Parameter == "gastro_gp_attend_2" ~ "Reporting parameter linking symptomatic norovirus infection in 5-14s to all cause gastroenteritis diagnosed in primary care",
+    # Parameter == "gastro_gp_attend_2" ~ "Reporting parameter linking symptomatic norovirus infection in 5-14s to all cause gastroenteritis diagnosed in primary care",
     Parameter == "D_immun" ~ "Number of years individual is immune",
     Parameter == "sigma" ~ "Proportion of individuals symptomatic"
   ), Parameter = case_when(
     Parameter == "surveillance_report_1" ~ "Underreporting to surveillance 0-4",
-    Parameter == "surveillance_report_2" ~ "Underreporting to surveillance 5-14",
+    # Parameter == "surveillance_report_1_winter" ~ "Underreporting to surveillance 0-4 in the winter",
+    # Parameter == "surveillance_report_1_summer" ~ "Underreporting to surveillance 0-4 in the summer",
+    # Parameter == "surveillance_report_2" ~ "Underreporting to surveillance 5-14",
+    # Parameter == "surveillance_report_2_winter" ~ "Underreporting to surveillance 5-14 in the winter",
+    # Parameter == "surveillance_report_2_summer" ~ "Underreporting to surveillance 5-14 in the summer",
     Parameter == "surveillance_report_3" ~ "Underreporting to surveillance 15-64",
+    # Parameter == "surveillance_report_3_winter" ~ "Underreporting to surveillance 15-64 in the winter",
+    # Parameter == "surveillance_report_3_summer" ~ "Underreporting to surveillance 15-64 in the summer",
     Parameter == "surveillance_report_4_winter" ~ "Underreporting to surveillance 65+ in the winter",
     Parameter == "surveillance_report_4_summer" ~ "Underreporting to surveillance 65+ in the summer",
     Parameter == "season_amp" ~ "Seasonal amplitude term",
@@ -251,10 +283,12 @@ posterior_table_image <- posterior_table |>
     # Parameter == "season_amp_over65" ~ "Scaling seasonal amplitude for over 65",
     Parameter == "probT_under5" ~ "Probability of infection between under 5s",
     Parameter == "probT_over5" ~ "Probability of infection to over 5s",
-    Parameter == "aki_hospitalisation_4" ~ "Norovirus associated AKI hospitalisation in 65+",
-    Parameter == "gastro_hospitalisation_4" ~ "Norovirus associated hospitalisation in 65+",
+    Parameter == "aki_hospitalisation_4_winter" ~ "Norovirus associated AKI hospitalisation in 65+ in the winter",
+    # Parameter == "aki_hospitalisation_4_summer" ~ "Norovirus associated AKI hospitalisation in 65+ in the summer",
+    Parameter == "gastro_hospitalisation_4_winter" ~ "Norovirus associated hospitalisation in 65+ in the winter",
+    # Parameter == "gastro_hospitalisation_4_summer" ~ "Norovirus associated hospitalisation in 65+ in the summer",
     Parameter == "gastro_gp_attend_1" ~ "GP attendance for all cause gastroenteritis in under 5s",
-    Parameter == "gastro_gp_attend_2" ~ "GP attendance for all cause gastroenteritis in 5-14s",
+    # Parameter == "gastro_gp_attend_2" ~ "GP attendance for all cause gastroenteritis in 5-14s",
     Parameter == "D_immun" ~ "Duration of immunity",
     Parameter == "sigma" ~ "Proportion symptomatic"
   )) |> 
@@ -273,7 +307,7 @@ posterior_table_image <- posterior_table |>
   
 posterior_table_image
 
-# save_as_image(posterior_table_image, path = "figures/posterior_table.png")
+save_as_image(posterior_table_image, path = "figures/posterior_table.png", bg = "white")
 
 #summary_stats
 theta <- as.list(theta)
@@ -282,35 +316,72 @@ theta <- as.list(theta)
 times <- 11000
 traj_median <- simulate(parameters = c(theta, par), init.state = init_matrix, times)
 age_incidence_median <- simulate(parameters = c(theta, par), init.state = init_matrix, times, age.incidence = TRUE)
+# 
+# theta$aki_hospitalisation_4_winter <- log(0.25)
+# theta$aki_hospitalisation_4_summer<- log(0.000001)
+# 
+# theta$probT_under5 <- log(0.24)
+# theta$probT_over5 <- log(0.042)
+# theta$D_immun <- 9
+# 
+# traj_median <- simulate(parameters = c(theta, par), init.state = init_matrix, times)
+# age_incidence_median <- simulate(parameters = c(theta, par), init.state = init_matrix, times, age.incidence = TRUE)
+# 
+# traj_median |>
+#   left_join(observation_data |> select(time, week_date, aki_hosp_obs_4), by = "time") |>
+#   filter(time < 364) |>
+#   ggplot(aes(x = week_date)) +
+#   geom_point(aes(y = aki_hosp_obs_4, color = "Points"), size = 2, show.legend = FALSE) +
+#   geom_line(aes(y = aki_hosp_model_4, linetype = "Model"), color = "red", show.legend = FALSE) +
+#   theme_classic()
+# 
+# traj_median |>
+#   left_join(observation_data |> select(time, week_date, noro_obs_3), by = "time") |>
+#   filter(time < 364) |>
+#   ggplot(aes(x = week_date)) +
+#   geom_point(aes(y = noro_model_3, color = "Points"), size = 2, show.legend = FALSE) +
+#   geom_line(aes(y = noro_obs_3, linetype = "Model"), color = "red", show.legend = FALSE) +
+#   theme_classic()
+# 
+# age_incidence_median |>
+#   left_join(age_incidence) |>
+#   pivot_longer(cols = c(model_incidence, harris_incidence), names_to = "study", values_to = "incidence") |>
+#   ggplot() +
+#   geom_bar(
+#     aes(x = age, y = incidence, fill = study),
+#     stat = "identity",
+#     position = "dodge"
+#   )
 
-traj_median |>
-  left_join(observation_data |> select(time, week_date, aki_hosp_obs_4), by = "time") |>
-  filter(time < 364) |>
-  ggplot(aes(x = week_date)) +
-  geom_point(aes(y = aki_hosp_obs_4, color = "Points"), size = 2, show.legend = FALSE) +
-  geom_line(aes(y = aki_hosp_model_4, linetype = "Model"), color = "red", show.legend = FALSE) +
-  theme_classic()
-
-total_noro_infections_65 <- traj_median |> 
+total_noro_infections_65 <- traj_median |>
   summarize(total_infectious_symp_4 = sum(infectious_symp_4_count))
 
-noro_linked_aki <- traj_median |> 
-  summarize(total_infectious_symp_4 = sum(infectious_symp_4_count)) |> 
-  mutate(aki_linked = total_infectious_symp_4*exp(theta$aki_hospitalisation_4)) |> 
+noro_linked_aki <- traj_median |>
+  left_join(observation_data |> select(time, week), by = "time") |>
+  mutate(seasonal_param = (0.5 * (1 + cos(2 * pi * (week - 1)/52))) * exp(theta$aki_hospitalisation_4_winter) +
+           (0.5 * (1 - cos(2 * pi * (week - 1)/52))) * 0,
+         infectious_symp_4_count_aki = infectious_symp_4_count*seasonal_param) |> 
+  summarize(aki_linked = sum(infectious_symp_4_count_aki)) |>
   select(aki_linked)
 
-noro_linked_aki_min <- traj_median |> 
-  summarize(total_infectious_symp_4 = sum(infectious_symp_4_count)) |> 
-  mutate(aki_linked_min = total_infectious_symp_4*exp(summary_stats$quantiles[9,1])) |> 
+noro_linked_aki_min <- traj_median |>
+  left_join(observation_data |> select(time, week), by = "time") |>
+  mutate(seasonal_param = (0.5 * (1 + cos(2 * pi * (week - 1)/52))) * exp(summary_stats$quantiles[8,1]) +
+           (0.5 * (1 - cos(2 * pi * (week - 1)/52))) * 0,
+         infectious_symp_4_count_aki = infectious_symp_4_count*seasonal_param) |> 
+  summarize(aki_linked_min = sum(infectious_symp_4_count_aki)) |>
   select(aki_linked_min)
 
-noro_linked_aki_max <- traj_median |> 
-  summarize(total_infectious_symp_4 = sum(infectious_symp_4_count)) |> 
-  mutate(aki_linked_max = total_infectious_symp_4*exp(summary_stats$quantiles[9,5])) |> 
+noro_linked_aki_max <- traj_median |>
+  left_join(observation_data |> select(time, week), by = "time") |>
+  mutate(seasonal_param = (0.5 * (1 + cos(2 * pi * (week - 1)/52))) * exp(summary_stats$quantiles[8,5]) +
+           (0.5 * (1 - cos(2 * pi * (week - 1)/52))) * 0,
+         infectious_symp_4_count_aki = infectious_symp_4_count*seasonal_param) |> 
+  summarize(aki_linked_max = sum(infectious_symp_4_count_aki)) |>
   select(aki_linked_max)
 
-aki_total <- observation_data |> 
-  mutate(aki_total = (aki_hosp_obs_4*init_matrix[4,1])/100000) |> 
+aki_total <- observation_data |>
+  mutate(aki_total = (aki_hosp_obs_4*init_matrix[4,1])/100000) |>
   summarize(aki_total = sum(aki_total))
 
 total_noro_infections_65
@@ -323,10 +394,10 @@ noro_linked_aki_min/aki_total
 noro_linked_aki_max/aki_total
 
 # generate latin hypercube samples of posterior 
-# source("R/lhs_posterior.R")
+source("R/lhs_posterior.R")
 source("R/random_sample.R")
 # lhs_samples <- generate_lhs_samples(traceBurnThin, n_samples = 2000)
-random_samples <- generate_random_samples(traceBurnThin, n_samples = 100)
+random_samples <- generate_random_samples(traceBurnThin, n_samples = 1000)
 lhs_samples <- random_samples
 
 ###
@@ -439,7 +510,7 @@ incidence_fit <- age_group_model_incidence |>
   xlab("Age group") +
   ylab("Incidence per 1000 p-yrs") +
   guides(fill = guide_legend(title = NULL)) +
-  ylim(c(0, 300)) +
+  ylim(c(0, 400)) +
   theme(
     axis.text = element_text(size = 10),
     axis.title = element_text(size = 10),
@@ -501,55 +572,55 @@ noro_1_fit_points <- noro_1_quantiles_df |>
     plot.margin = margin(t = 20, r = 20, b = 20, l = 20)
   )
 
-noro_2_trajectory <- generate_trajectories_with_uncertainty(lhs_samples, init.state, outcome = "noro_model_2")
-
-noro_2_quantiles_df <- data.frame(
-  time = 1:365,
-  median_traj = apply(noro_2_trajectory, 2, median),
-  ci_lower = apply(noro_2_trajectory, 2, quantile, 0.025),
-  ci_upper = apply(noro_2_trajectory, 2, quantile, 0.975)
-)
-
-noro_2_fit_points <- noro_2_quantiles_df |> 
-  left_join(observation_data |> select(time, week_date, noro_obs_2), by = "time") |>
-  filter(time < 364) |> 
-  ggplot(aes(x = week_date)) +
-  geom_ribbon(aes(ymin = ci_lower, ymax = ci_upper, fill = "95% CrI"), alpha = 0.5) +
-  geom_point(aes(y = noro_obs_2, color = "Observed"), size = 1.5) +
-  geom_line(aes(y = median_traj, color = "Model fit"), linewidth = 1) +
-  annotate("rect", fill = "gray95", alpha = 0.5,
-           xmin = as.Date("2014-01-01"), xmax = as.Date("2014-12-31"),
-           ymin = -Inf, ymax = Inf) +
-  annotate("rect", fill = "gray95", alpha = 0.5,
-           xmin = as.Date("2016-01-01"), xmax = as.Date("2016-12-31"),
-           ymin = -Inf, ymax = Inf) +
-  annotate("rect", fill = "gray95", alpha = 0.5,
-           xmin = as.Date("2018-01-01"), xmax = as.Date("2018-12-31"),
-           ymin = -Inf, ymax = Inf) +
-  theme_minimal(base_size = 11) +
-  scale_x_date(expand = c(0, 0),
-               date_breaks = "1 year",
-               date_labels = "%Y") +
-  scale_y_continuous(expand = c(0, 0), 
-                     limits = c(0, 40), 
-                     breaks = seq(0, 40, by = 10)) +
-  scale_color_manual(values = c("Observed" = "#2c3e50", "Model fit" = "#e74c3c")) +
-  scale_fill_manual(values = c("95% CrI" = "#3498db")) +
-  labs(title = "Norovirus laboratory surveillance, 5-14 years olds (SGSS)",
-       y = "Number of laboratory reports",
-       x = NULL) +
-  theme(
-    plot.title = element_text(size = 12, face = "bold", margin = margin(b = 10)),
-    plot.subtitle = element_text(size = 11, color = "gray30", margin = margin(b = 15)),
-    axis.title.y = element_text(size = 11, margin = margin(r = 10)),
-    axis.text = element_text(size = 10, color = "gray30"),
-    legend.position = "bottom",
-    legend.title = element_blank(),
-    legend.spacing.x = unit(0.5, 'cm'),
-    panel.grid.major = element_blank(),
-    panel.grid.minor = element_blank(),
-    plot.margin = margin(t = 20, r = 20, b = 20, l = 20)
-  )
+# noro_2_trajectory <- generate_trajectories_with_uncertainty(lhs_samples, init.state, outcome = "noro_model_2")
+# 
+# noro_2_quantiles_df <- data.frame(
+#   time = 1:365,
+#   median_traj = apply(noro_2_trajectory, 2, median),
+#   ci_lower = apply(noro_2_trajectory, 2, quantile, 0.025),
+#   ci_upper = apply(noro_2_trajectory, 2, quantile, 0.975)
+# )
+# 
+# noro_2_fit_points <- noro_2_quantiles_df |> 
+#   left_join(observation_data |> select(time, week_date, noro_obs_2), by = "time") |>
+#   filter(time < 364) |> 
+#   ggplot(aes(x = week_date)) +
+#   geom_ribbon(aes(ymin = ci_lower, ymax = ci_upper, fill = "95% CrI"), alpha = 0.5) +
+#   geom_point(aes(y = noro_obs_2, color = "Observed"), size = 1.5) +
+#   geom_line(aes(y = median_traj, color = "Model fit"), linewidth = 1) +
+#   annotate("rect", fill = "gray95", alpha = 0.5,
+#            xmin = as.Date("2014-01-01"), xmax = as.Date("2014-12-31"),
+#            ymin = -Inf, ymax = Inf) +
+#   annotate("rect", fill = "gray95", alpha = 0.5,
+#            xmin = as.Date("2016-01-01"), xmax = as.Date("2016-12-31"),
+#            ymin = -Inf, ymax = Inf) +
+#   annotate("rect", fill = "gray95", alpha = 0.5,
+#            xmin = as.Date("2018-01-01"), xmax = as.Date("2018-12-31"),
+#            ymin = -Inf, ymax = Inf) +
+#   theme_minimal(base_size = 11) +
+#   scale_x_date(expand = c(0, 0),
+#                date_breaks = "1 year",
+#                date_labels = "%Y") +
+#   scale_y_continuous(expand = c(0, 0), 
+#                      limits = c(0, 40), 
+#                      breaks = seq(0, 40, by = 10)) +
+#   scale_color_manual(values = c("Observed" = "#2c3e50", "Model fit" = "#e74c3c")) +
+#   scale_fill_manual(values = c("95% CrI" = "#3498db")) +
+#   labs(title = "Norovirus laboratory surveillance, 5-14 years olds (SGSS)",
+#        y = "Number of laboratory reports",
+#        x = NULL) +
+#   theme(
+#     plot.title = element_text(size = 12, face = "bold", margin = margin(b = 10)),
+#     plot.subtitle = element_text(size = 11, color = "gray30", margin = margin(b = 15)),
+#     axis.title.y = element_text(size = 11, margin = margin(r = 10)),
+#     axis.text = element_text(size = 10, color = "gray30"),
+#     legend.position = "bottom",
+#     legend.title = element_blank(),
+#     legend.spacing.x = unit(0.5, 'cm'),
+#     panel.grid.major = element_blank(),
+#     panel.grid.minor = element_blank(),
+#     plot.margin = margin(t = 20, r = 20, b = 20, l = 20)
+#   )
 
 noro_3_trajectory <- generate_trajectories_with_uncertainty(lhs_samples, init.state, outcome = "noro_model_3")
 
@@ -846,57 +917,58 @@ gastro_gp_1_fit_points <- gastro_gp_1_quantiles_df |>
 
 ## gastro hosp fit to observation data (age 5-14)
 
-gastro_gp_2_trajectory <- generate_trajectories_with_uncertainty(lhs_samples, init.state, outcome = "gastro_gp_model_2")
+# gastro_gp_2_trajectory <- generate_trajectories_with_uncertainty(lhs_samples, init.state, outcome = "gastro_gp_model_2")
 
-gastro_gp_2_quantiles_df <- data.frame(
-  time = 1:365,
-  median_traj = apply(gastro_gp_2_trajectory, 2, median, na.rm = TRUE),
-  ci_lower = apply(gastro_gp_2_trajectory, 2, quantile, 0.025, na.rm = TRUE),
-  ci_upper = apply(gastro_gp_2_trajectory, 2, quantile, 0.975, na.rm = TRUE)
-)
-
-gastro_gp_2_fit_points <- gastro_gp_2_quantiles_df |> 
-  left_join(observation_data |> select(time, week_date, gastro_gp_obs_2), by = "time") |>
-  filter(time < 364) |>
-  ggplot(aes(x = week_date)) +
-  geom_ribbon(aes(ymin = ci_lower, ymax = ci_upper, fill = "95% CrI"), alpha = 0.5) +
-  geom_point(aes(y = gastro_gp_obs_2, color = "Observed"), size = 1.5) +
-  geom_line(aes(y = median_traj, color = "Model fit"), linewidth = 1) +
-  annotate("rect", fill = "gray95", alpha = 0.5,
-           xmin = as.Date("2014-01-01"), xmax = as.Date("2014-12-31"),
-           ymin = -Inf, ymax = Inf) +
-  annotate("rect", fill = "gray95", alpha = 0.5,
-           xmin = as.Date("2016-01-01"), xmax = as.Date("2016-12-31"),
-           ymin = -Inf, ymax = Inf) +
-  annotate("rect", fill = "gray95", alpha = 0.5,
-           xmin = as.Date("2018-01-01"), xmax = as.Date("2018-12-31"),
-           ymin = -Inf, ymax = Inf) +
-  theme_minimal(base_size = 11) +
-  scale_x_date(expand = c(0, 0),
-               date_breaks = "1 year",
-               date_labels = "%Y") +
-  scale_y_continuous(expand = c(0, 0), 
-                     limits = c(0, 200), 
-                     breaks = seq(0, 200, by = 50)) +
-  scale_color_manual(values = c("Observed" = "#2c3e50", "Model fit" = "#e74c3c")) +
-  scale_fill_manual(values = c("95% CrI" = "#3498db")) +
-  labs(title = "Gastroenteritis primary care attendance, 5-14 year olds (CPRD)",
-       y = "Incidence per 100,000 person-years",
-       x = NULL) +
-  theme(axis.title.y = element_text(size = 11, margin = margin(r = 10)),
-        axis.text = element_text(size = 10, color = "gray30"),
-        legend.position = "bottom",
-        legend.title = element_blank(),
-        legend.spacing.x = unit(0.5, 'cm'),
-        panel.grid.major = element_blank(),
-        panel.grid.minor = element_blank(),
-        plot.margin = margin(t = 20, r = 20, b = 20, l = 20)
-  )
+# gastro_gp_2_quantiles_df <- data.frame(
+#   time = 1:365,
+#   median_traj = apply(gastro_gp_2_trajectory, 2, median, na.rm = TRUE),
+#   ci_lower = apply(gastro_gp_2_trajectory, 2, quantile, 0.025, na.rm = TRUE),
+#   ci_upper = apply(gastro_gp_2_trajectory, 2, quantile, 0.975, na.rm = TRUE)
+# )
+# 
+# gastro_gp_2_fit_points <- gastro_gp_2_quantiles_df |> 
+#   left_join(observation_data |> select(time, week_date, gastro_gp_obs_2), by = "time") |>
+#   filter(time < 364) |>
+#   ggplot(aes(x = week_date)) +
+#   geom_ribbon(aes(ymin = ci_lower, ymax = ci_upper, fill = "95% CrI"), alpha = 0.5) +
+#   geom_point(aes(y = gastro_gp_obs_2, color = "Observed"), size = 1.5) +
+#   geom_line(aes(y = median_traj, color = "Model fit"), linewidth = 1) +
+#   annotate("rect", fill = "gray95", alpha = 0.5,
+#            xmin = as.Date("2014-01-01"), xmax = as.Date("2014-12-31"),
+#            ymin = -Inf, ymax = Inf) +
+#   annotate("rect", fill = "gray95", alpha = 0.5,
+#            xmin = as.Date("2016-01-01"), xmax = as.Date("2016-12-31"),
+#            ymin = -Inf, ymax = Inf) +
+#   annotate("rect", fill = "gray95", alpha = 0.5,
+#            xmin = as.Date("2018-01-01"), xmax = as.Date("2018-12-31"),
+#            ymin = -Inf, ymax = Inf) +
+#   theme_minimal(base_size = 11) +
+#   scale_x_date(expand = c(0, 0),
+#                date_breaks = "1 year",
+#                date_labels = "%Y") +
+#   scale_y_continuous(expand = c(0, 0), 
+#                      limits = c(0, 200), 
+#                      breaks = seq(0, 200, by = 50)) +
+#   scale_color_manual(values = c("Observed" = "#2c3e50", "Model fit" = "#e74c3c")) +
+#   scale_fill_manual(values = c("95% CrI" = "#3498db")) +
+#   labs(title = "Gastroenteritis primary care attendance, 5-14 year olds (CPRD)",
+#        y = "Incidence per 100,000 person-years",
+#        x = NULL) +
+#   theme(axis.title.y = element_text(size = 11, margin = margin(r = 10)),
+#         axis.text = element_text(size = 10, color = "gray30"),
+#         legend.position = "bottom",
+#         legend.title = element_blank(),
+#         legend.spacing.x = unit(0.5, 'cm'),
+#         panel.grid.major = element_blank(),
+#         panel.grid.minor = element_blank(),
+#         plot.margin = margin(t = 20, r = 20, b = 20, l = 20)
+#   )
        
+source("R/random_trajectories_plot.R")
 
 multi_panel_noro_surveillance_plot <- ggarrange(
   noro_1_fit_points,
-  noro_2_fit_points,
+  # noro_2_fit_points,
   noro_3_fit_points,
   noro_4_fit_points,
   ncol = 2,
@@ -907,12 +979,14 @@ multi_panel_noro_surveillance_plot <- ggarrange(
 
 multi_panel_noro_surveillance_plot
 
-# ggsave("figures/multi_panel_noro_surveillance_plot.png", width = 14, height = 12, dpi = 300)
+ggarrange(noro_1, noro_3, noro_4, ncol = 2, nrow = 2, common.legend = TRUE)
+
+ggsave("figures/multi_panel_noro_surveillance_plot.png", width = 14, height = 12, dpi = 600, bg = "white")
 # ggsave("figures/multi_panel_figure_1.pdf", width = 12, height = 14)
 
 multi_panel_healthcare_plot <- ggarrange(
   gastro_gp_1_fit_points,
-  gastro_gp_2_fit_points,
+  # gastro_gp_2_fit_points,
   gastro_fit_points,
   aki_fit_points,
   ncol = 2,
@@ -924,7 +998,9 @@ multi_panel_healthcare_plot <- ggarrange(
 
 multi_panel_healthcare_plot
 
-# ggsave("figures/multi_panel_healthcare_plot.png", width = 14, height = 12, dpi = 600)
+ggarrange(gastro_gp_1, gastro_hosp_4, aki, ncol = 2, nrow = 2, common.legend = TRUE)
+
+ggsave("figures/multi_panel_healthcare_plot.png", width = 14, height = 12, dpi = 600, bg = "white")
 
 # ggsave("figures/multi_panel_figure_2.png", width = 12, height = 14)
 # ggsave("figures/multi_panel_figure_2.pdf", width = 12, height = 14)
@@ -976,19 +1052,65 @@ cost_table <- cost_per_year_signif |>
 
 cost_table
 
-# save_as_image(cost_table, path = "figures/cost_table.png")
+save_as_image(cost_table, path = "figures/cost_table.png")
 
 #' multiple chains
 
-# xyplot(multi_trace_params)
+xyplot(multi_trace_params)
+
+xyplot(trace1_params)
+xyplot(trace2_params)
+xyplot(trace3_params)
+xyplot(trace4_params)
 
 #' #### logDensity
 
-# xyplot(multi_trace_log_density)
+xyplot(multi_trace_log_density)
 
-# traceBurnThin_params_multi <- burnAndThin(multi_trace_params, burn = burn_value, thin = thin_factor)
+traceBurnThin_params_multi <- burnAndThin(multi_trace_params, burn = burn_value, thin = thin_factor)
+
+burnAndThin_log <- function(trace, burn = 0, thin = 0) {
+  convertToMCMC <- FALSE
+  if (inherits(trace, "mcmc")) {
+    convertToMCMC <- TRUE
+    trace <- as.data.frame(trace)
+  }
+  else if (inherits(trace, "mcmc.list")) {
+    convertToMCMC <- TRUE
+    trace <- as.list(trace)
+  }
+  
+  if (is.data.frame(trace) || is.matrix(trace)) {
+    if (burn > 0) {
+      trace <- trace[-(1:burn), ]
+    }
+    trace <- trace[seq(1, nrow(trace), thin + 1), ]
+    if (convertToMCMC) {
+      trace <- mcmc(trace)
+    }
+  }
+  else {
+    trace <- lapply(trace, function(x) {
+      if (burn > 0) {
+        x <- x[-(1:burn)]  # Removed the comma
+      }
+      x <- x[seq(1, length(x), thin + 1)]  # Changed nrow(x) to length(x)
+      if (convertToMCMC) {
+        x <- mcmc(x)
+      }
+      return(x)
+    })
+    if (convertToMCMC) {
+      trace <- mcmc.list(trace)
+    }
+  }
+  return(trace)
+}
+
+traceBurnThin_log_density_multi <- burnAndThin_log(multi_trace_log_density, burn = burn_value, thin = thin_factor)
 
 #' ## multiple chains without burn in
 
-# xyplot(traceBurnThin_params_multi)
+xyplot(traceBurnThin_params_multi)
 
+xyplot(traceBurnThin_log_density_multi)
