@@ -2,6 +2,8 @@
 
 source("paths/00_filepath.R")
 
+options(arrow.unsafe_metadata = TRUE)
+
 ###################
 ## denominator data
 ###################

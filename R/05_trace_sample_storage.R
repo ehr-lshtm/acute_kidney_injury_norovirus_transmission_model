@@ -26,8 +26,6 @@ par = list(
   rho = 0.05,
   aging = aging,
   season_amp_over65 = 1
-  # probT_under5 = log(0.24), 
-  # probT_over5 = log(0.042)
   )
 
 par[["contacts"]] <- uk_contact_rate_matrix
@@ -41,48 +39,18 @@ knots_number = 3
 
 # initial thetas
 
-# starting.value <-
-#   c(
-#     season_amp_over65 = 1.0,
-#     sigma = 0.78, 
-#     surveillance_report_1 = 0.002,
-#     surveillance_report_2 = 0.0004,
-#     surveillance_report_3 = 0.00084, 
-#     season_amp = 2.5, 
-#     season_offset = 15, 
-#     aki_hospitalisation_4 = log(0.4), 
-#     gastro_hospitalisation_4 = log(0.05), 
-#     gastro_gp_attend_1 = log(0.4),
-#     gastro_gp_attend_2 = log(0.35), 
-#     D_immun = 8.0,
-#     probT_under5 = log(0.22), 
-#     probT_over5 = log(0.04)
-#     )
-
 starting.value <-
   c(
     sigma = 0.78, 
     surveillance_report_1 = 0.002,
-    # surveillance_report_2 = 0.001,
     surveillance_report_3 = 0.001,
-    # surveillance_report_1_summer = 0.002,
-    # surveillance_report_1_winter = 0.002,
-    # surveillance_report_2_summer = 0.0004,
-    # surveillance_report_2_winter = 0.0004,
-    # surveillance_report_3_summer = 0.00084,
-    # surveillance_report_3_winter = 0.00084, 
     surveillance_report_4_summer = 0.0035, 
     surveillance_report_4_winter = 0.026, 
     season_amp = 2.5, 
     season_offset = 15, 
-    # aki_hospitalisation_4 = log(0.2), #log(0.05),
-    # aki_hospitalisation_4_summer = log(0.2), #log(0.05),
     aki_hospitalisation_4_winter = log(0.2), #log(0.05),
-    # gastro_hospitalisation_4 = log(0.1), #log(0.05),
-    # gastro_hospitalisation_4_summer = log(0.1), #log(0.05), 
     gastro_hospitalisation_4_winter = log(0.1), #log(0.05),
     gastro_gp_attend_1 = log(0.4),
-    # gastro_gp_attend_2 = log(0.35), #log(0.35), 
     D_immun = 8,
     probT_under5 = log(0.22),
     probT_over5 = log(0.04)
@@ -92,29 +60,16 @@ starting.value <-
                  
 prop.sd <-
   c(
-    # season_amp_over65 = 0.01, 
     sigma = 0.0015,
     surveillance_report_1 = 0.00003,
-    # surveillance_report_2 = 0.00003,
     surveillance_report_3 = 0.00003,
-    # surveillance_report_1_summer = 0.00003,
-    # surveillance_report_1_winter = 0.00003,
-    # surveillance_report_2_summer = 0.00003,
-    # surveillance_report_2_winter = 0.00003,
-    # surveillance_report_3_summer = 0.00003,
-    # surveillance_report_3_winter = 0.00003,
     surveillance_report_4_summer = 0.00003,
     surveillance_report_4_winter = 0.00003,
     season_amp = 0.02,
     season_offset = 0.1, 
-    # aki_hospitalisation_4 = 0.095,
-    # aki_hospitalisation_4_summer = 0.095,
     aki_hospitalisation_4_winter = 0.095,
-    # gastro_hospitalisation_4 = 0.095,
-    # gastro_hospitalisation_4_summer = 0.095, 
     gastro_hospitalisation_4_winter = 0.095,
     gastro_gp_attend_1 = 0.005, 
-    # gastro_gp_attend_2 = 0.002, 
     D_immun = 0.15, 
     probT_under5 = 0.012,
     probT_over5 = 0.015
@@ -122,58 +77,32 @@ prop.sd <-
 
 # lower and upper limits of each parameter
 lower <- c(
-  # season_amp_over65 = 0,
   sigma = 0.6,
   surveillance_report_1 = 0,
-  # surveillance_report_2 = 0,
   surveillance_report_3 = 0,
-  # surveillance_report_1_summer = 0,
-  # surveillance_report_1_winter = 0,
-  # surveillance_report_2_summer = 0,
-  # surveillance_report_2_winter = 0,
-  # surveillance_report_3_summer = 0,
-  # surveillance_report_3_winter = 0,
   surveillance_report_4_summer = 0,
   surveillance_report_4_winter = 0,
   season_amp = 0,
   season_offset = 0,
-  # aki_hospitalisation_4 = -Inf, # bound so that transformed value is no lower than 0
-  # aki_hospitalisation_4_summer = -Inf, # bound so that transformed value is no lower than 0
   aki_hospitalisation_4_winter = -Inf, # bound so that transformed value is no lower than 0
-  # gastro_hospitalisation_4 = -Inf,  # bound so that transformed value is no lower than 0
-  # gastro_hospitalisation_4_summer = -Inf,  # bound so that transformed value is no lower than 0
   gastro_hospitalisation_4_winter = -Inf,  # bound so that transformed value is no lower than 0
   gastro_gp_attend_1 = -Inf,  # bound so that transformed value is no lower than 0
-  # gastro_gp_attend_2 = -Inf,  # bound so that transformed value is no lower than 0
   D_immun = 0.5,
   probT_under5 = log(0.0001),  # bound so that transformed value is no lower than 0
   probT_over5 = log(0.0001) # bound so that transformed value is no lower than 0
 )
 
 upper <- c(
-  # season_amp_over65 = 10,
   sigma = 0.9,
   surveillance_report_1 = 0.06,
-  # surveillance_report_2 = 0.06,
   surveillance_report_3 = 0.06,
-  # surveillance_report_1_summer = 0.06,
-  # surveillance_report_1_winter = 0.06,
-  # surveillance_report_2_summer = 0.06,
-  # surveillance_report_2_winter = 0.06,
-  # surveillance_report_3_summer = 0.06,
-  # surveillance_report_3_winter = 0.06,
   surveillance_report_4_summer = 0.1,
   surveillance_report_4_winter = 0.1,
   season_amp = 10,
   season_offset = 50,
-  # aki_hospitalisation_4 = log(0.75), # bound so that transformed value is no higher than 0.5
-  # aki_hospitalisation_4_summer = log(0.5), # bound so that transformed value is no higher than 0.5
   aki_hospitalisation_4_winter = log(0.75), # bound so that transformed value is no higher than 0.5
-  # gastro_hospitalisation_4 = log(0.5), # bound so that transformed value is no higher than 0.4
-  # gastro_hospitalisation_4_summer = log(0.5), # bound so that transformed value is no higher than 0.4
   gastro_hospitalisation_4_winter = log(0.5), # bound so that transformed value is no higher than 0.4
   gastro_gp_attend_1 = log(0.5), # bound so that transformed value is no higher than 0.5
-  # gastro_gp_attend_2 = log(0.75), # bound so that transformed value is no higher than 0.5
   D_immun = 12,
   probT_under5 = log(0.5), # bound so that transformed value is no higher than 0.44
   probT_over5 = log(0.12) # bound so that transformed value is no higher than 0.114

@@ -232,9 +232,9 @@ parameter_order <- c(
 )
 
 posterior_table_image <- posterior_table |> 
-  mutate(theta = signif(theta, digits = 3),
-         q2.5 = signif(q2.5, digits = 3),
-         q97.5 = signif(q97.5, digits = 3),
+  mutate(theta = signif(theta, digits = 2),
+         q2.5 = signif(q2.5, digits = 2),
+         q97.5 = signif(q97.5, digits = 2),
          cri = paste0(q2.5, "-", q97.5),
          "Median (95% CrI)" = paste0(theta, " ", paste0("(", cri, ")"))
          ) |>
@@ -257,7 +257,7 @@ posterior_table_image <- posterior_table |>
     Parameter == "season_offset" ~ "A term forcing the timing of the periodicity in the contact rate",
     # Parameter == "season_amp_over65" ~ "Scaling seasonal amplitude for over 65 seasonality to improve fit",
     Parameter == "probT_under5" ~ "Probability of transmission in under 5s transmitting to under 5s",
-    Parameter == "probT_over5" ~ "Probability of transmission transmitting to over 5s",
+    Parameter == "probT_over5" ~ "Probability of transmission in under 5s transmitting to over 5s, and over 5s transmitting to over 5s",
     Parameter == "aki_hospitalisation_4_winter" ~ "Proportion of symptomatic norovirus infections linked to an AKI hospitalisation in over 65s in the winter",
     # Parameter == "aki_hospitalisation_4_summer" ~ "Proportion of symptomatic norovirus infections linked to an AKI hospitalisation in over 65s in the summer",
     Parameter == "gastro_hospitalisation_4_winter" ~ "Proportion of symptomatic norovirus infections linked to a gastroenteritis hospitalisation in over 65s in the winter",
@@ -287,7 +287,7 @@ posterior_table_image <- posterior_table |>
     # Parameter == "aki_hospitalisation_4_summer" ~ "Norovirus associated AKI hospitalisation in 65+ in the summer",
     Parameter == "gastro_hospitalisation_4_winter" ~ "Norovirus associated hospitalisation in 65+ in the winter",
     # Parameter == "gastro_hospitalisation_4_summer" ~ "Norovirus associated hospitalisation in 65+ in the summer",
-    Parameter == "gastro_gp_attend_1" ~ "GP attendance for all cause gastroenteritis in under 5s",
+    Parameter == "gastro_gp_attend_1" ~ "GP reporting for all cause gastroenteritis in under 5s",
     # Parameter == "gastro_gp_attend_2" ~ "GP attendance for all cause gastroenteritis in 5-14s",
     Parameter == "D_immun" ~ "Duration of immunity",
     Parameter == "sigma" ~ "Proportion symptomatic"
@@ -398,14 +398,13 @@ source("R/lhs_posterior.R")
 source("R/random_sample.R")
 # lhs_samples <- generate_lhs_samples(traceBurnThin, n_samples = 2000)
 random_samples <- generate_random_samples(traceBurnThin, n_samples = 1000)
-lhs_samples <- random_samples
 
 ###
 
-infectious_symp_4_trajectory <- generate_trajectories_with_uncertainty(lhs_samples, init.state, outcome = "infectious_symp_4_count")
+infectious_symp_4_trajectory <- generate_trajectories_with_uncertainty(random_samples, init.state, outcome = "infectious_symp_4_count")
 
 infectious_symp_4_quantiles_df <- data.frame(
-  time = 1:365,
+  time = 1:364,
   median_traj = apply(infectious_symp_4_trajectory, 2, median),
   ci_lower = apply(infectious_symp_4_trajectory, 2, quantile, 0.025),
   ci_upper = apply(infectious_symp_4_trajectory, 2, quantile, 0.975)) |> 
@@ -417,10 +416,10 @@ infectious_symp_4_quantiles_df <- data.frame(
 
 ### age group incidence
 
-process_age_group_incidence <- function(lhs_samples, init.state, age_group) {
+process_age_group_incidence <- function(random_samples, init.state, age_group) {
   # Generate incidence data for the age group
   age_group_incidence <- generate_age_group_incidence_with_uncertainty(
-    lhs_samples, 
+    random_samples, 
     init.state, 
     age_group
   )
@@ -440,10 +439,10 @@ process_age_group_incidence <- function(lhs_samples, init.state, age_group) {
     
 }
 
-age_group_1_incidence <- process_age_group_incidence(lhs_samples, init.state, 1)
-age_group_2_incidence <- process_age_group_incidence(lhs_samples, init.state, 2)
-age_group_3_incidence <- process_age_group_incidence(lhs_samples, init.state, 3)
-age_group_4_incidence <- process_age_group_incidence(lhs_samples, init.state, 4)
+age_group_1_incidence <- process_age_group_incidence(random_samples, init.state, 1)
+age_group_2_incidence <- process_age_group_incidence(random_samples, init.state, 2)
+age_group_3_incidence <- process_age_group_incidence(random_samples, init.state, 3)
+age_group_4_incidence <- process_age_group_incidence(random_samples, init.state, 4)
 
 age_group_model_incidence <- age_group_1_incidence |> mutate(age_group = "0-4") |> 
   bind_rows(age_group_2_incidence |> mutate(age_group = "5-14")) |>
@@ -522,10 +521,10 @@ incidence_fit
 
 ## noro fit to observation data (model age 65+; observation data all ages)
 
-noro_1_trajectory <- generate_trajectories_with_uncertainty(lhs_samples, init.state, outcome = "noro_model_1")
+noro_1_trajectory <- generate_trajectories_with_uncertainty(random_samples, init.state, outcome = "noro_model_1")
 
 noro_1_quantiles_df <- data.frame(
-  time = 1:365,
+  time = 1:364,
   median_traj = apply(noro_1_trajectory, 2, median),
   ci_lower = apply(noro_1_trajectory, 2, quantile, 0.025),
   ci_upper = apply(noro_1_trajectory, 2, quantile, 0.975)
@@ -572,7 +571,7 @@ noro_1_fit_points <- noro_1_quantiles_df |>
     plot.margin = margin(t = 20, r = 20, b = 20, l = 20)
   )
 
-# noro_2_trajectory <- generate_trajectories_with_uncertainty(lhs_samples, init.state, outcome = "noro_model_2")
+# noro_2_trajectory <- generate_trajectories_with_uncertainty(random_samples, init.state, outcome = "noro_model_2")
 # 
 # noro_2_quantiles_df <- data.frame(
 #   time = 1:365,
@@ -622,10 +621,10 @@ noro_1_fit_points <- noro_1_quantiles_df |>
 #     plot.margin = margin(t = 20, r = 20, b = 20, l = 20)
 #   )
 
-noro_3_trajectory <- generate_trajectories_with_uncertainty(lhs_samples, init.state, outcome = "noro_model_3")
+noro_3_trajectory <- generate_trajectories_with_uncertainty(random_samples, init.state, outcome = "noro_model_3")
 
 noro_3_quantiles_df <- data.frame(
-  time = 1:365,
+  time = 1:364,
   median_traj = apply(noro_3_trajectory, 2, median),
   ci_lower = apply(noro_3_trajectory, 2, quantile, 0.025),
   ci_upper = apply(noro_3_trajectory, 2, quantile, 0.975)
@@ -672,10 +671,10 @@ noro_3_fit_points <- noro_3_quantiles_df |>
     plot.margin = margin(t = 20, r = 20, b = 20, l = 20)
   )
  
-noro_4_trajectory <- generate_trajectories_with_uncertainty(lhs_samples, init.state, outcome = "noro_model_4")
+noro_4_trajectory <- generate_trajectories_with_uncertainty(random_samples, init.state, outcome = "noro_model_4")
 
 noro_4_quantiles_df <- data.frame(
-  time = 1:365,
+  time = 1:364,
   median_traj = apply(noro_4_trajectory, 2, median),
   ci_lower = apply(noro_4_trajectory, 2, quantile, 0.025),
   ci_upper = apply(noro_4_trajectory, 2, quantile, 0.975)
@@ -714,7 +713,7 @@ noro_4_fit_points <- noro_4_quantiles_df |>
     plot.subtitle = element_text(size = 11, color = "gray30", margin = margin(b = 15)),
     axis.title.y = element_text(size = 11, margin = margin(r = 10)),
     axis.text = element_text(size = 10, color = "gray30"),
-    legend.position = "bottom",
+    legend.position = "none",
     legend.title = element_blank(),
     legend.spacing.x = unit(0.5, 'cm'),
     panel.grid.major = element_blank(),
@@ -724,10 +723,10 @@ noro_4_fit_points <- noro_4_quantiles_df |>
 
 ## aki hosp fit to observation data (age 65+)
 
-aki_trajectory <- generate_trajectories_with_uncertainty(lhs_samples, init.state, outcome = "aki_hosp_model_4")
+aki_trajectory <- generate_trajectories_with_uncertainty(random_samples, init.state, outcome = "aki_hosp_model_4")
 
 aki_quantiles_df <- data.frame(
-  time = 1:365,
+  time = 1:364,
   median_traj = apply(aki_trajectory, 2, median),
   ci_lower = apply(aki_trajectory, 2, quantile, 0.025),
   ci_upper = apply(aki_trajectory, 2, quantile, 0.975)
@@ -819,10 +818,10 @@ aki_fit_points <- aki_quantiles_df |>
 
 ## gastro hosp fit to observation data (age 65+)
 
-gastro_hosp_4_trajectory <- generate_trajectories_with_uncertainty(lhs_samples, init.state, outcome = "gastro_hosp_model_4")
+gastro_hosp_4_trajectory <- generate_trajectories_with_uncertainty(random_samples, init.state, outcome = "gastro_hosp_model_4")
 
 gastro_hosp_4_quantiles_df <- data.frame(
-  time = 1:365,
+  time = 1:364,
   median_traj = apply(gastro_hosp_4_trajectory, 2, median),
   ci_lower = apply(gastro_hosp_4_trajectory, 2, quantile, 0.025),
   ci_upper = apply(gastro_hosp_4_trajectory, 2, quantile, 0.975)
@@ -868,10 +867,10 @@ gastro_fit_points <- gastro_hosp_4_quantiles_df |>
 
 ## gastro hosp fit to observation data (age 0-4)
 
-gastro_gp_1_trajectory <- generate_trajectories_with_uncertainty(lhs_samples, init.state, outcome = "gastro_gp_model_1")
+gastro_gp_1_trajectory <- generate_trajectories_with_uncertainty(random_samples, init.state, outcome = "gastro_gp_model_1")
 
 gastro_gp_1_quantiles_df <- data.frame(
-  time = 1:365,
+  time = 1:364,
   median_traj = apply(gastro_gp_1_trajectory, 2, median, na.rm = TRUE),
   ci_lower = apply(gastro_gp_1_trajectory, 2, quantile, 0.025, na.rm = TRUE),
   ci_upper = apply(gastro_gp_1_trajectory, 2, quantile, 0.975, na.rm = TRUE)
@@ -917,7 +916,7 @@ gastro_gp_1_fit_points <- gastro_gp_1_quantiles_df |>
 
 ## gastro hosp fit to observation data (age 5-14)
 
-# gastro_gp_2_trajectory <- generate_trajectories_with_uncertainty(lhs_samples, init.state, outcome = "gastro_gp_model_2")
+# gastro_gp_2_trajectory <- generate_trajectories_with_uncertainty(random_samples, init.state, outcome = "gastro_gp_model_2")
 
 # gastro_gp_2_quantiles_df <- data.frame(
 #   time = 1:365,
@@ -966,20 +965,37 @@ gastro_gp_1_fit_points <- gastro_gp_1_quantiles_df |>
        
 source("R/random_trajectories_plot.R")
 
-multi_panel_noro_surveillance_plot <- ggarrange(
-  noro_1_fit_points,
-  # noro_2_fit_points,
-  noro_3_fit_points,
-  noro_4_fit_points,
-  ncol = 2,
-  nrow = 2,
-  labels = c("A", "B", "C", "D"),
-  common.legend = TRUE
-)
+# ggarrange(
+#   noro_1_fit_points,
+#   # noro_2_fit_points,
+#   noro_3_fit_points,
+#   noro_4_fit_points,
+#   incidence_fit,
+#   ncol = 2,
+#   nrow = 2,
+#   labels = c("A", "B", "C", "D"),
+#   common.legend = TRUE
+# )
+
+# ggarrange(noro_1, noro_3, noro_4, ncol = 2, nrow = 2, common.legend = TRUE)
+
+# First combine A, B, C with common legend
+top_row <- ggarrange(noro_1_fit_points, noro_3_fit_points, 
+                     ncol = 2, nrow = 1, 
+                     common.legend = TRUE,
+                     legend = "top",
+                     labels = c("A", "B"))
+
+bottom_row <- ggarrange(noro_4_fit_points, incidence_fit, 
+                        ncol = 2, nrow = 1,
+                        labels = c("C", "D"),
+                        common.legend = FALSE)
+
+# Combine rows
+multi_panel_noro_surveillance_plot <- ggarrange(top_row, bottom_row,
+                        ncol = 1, nrow = 2)
 
 multi_panel_noro_surveillance_plot
-
-ggarrange(noro_1, noro_3, noro_4, ncol = 2, nrow = 2, common.legend = TRUE)
 
 ggsave("figures/multi_panel_noro_surveillance_plot.png", width = 14, height = 12, dpi = 600, bg = "white")
 # ggsave("figures/multi_panel_figure_1.pdf", width = 12, height = 14)

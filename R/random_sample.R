@@ -19,7 +19,7 @@ generate_random_samples <- function(trace_df, n_samples = 100) {
 # Second function remains the same
 generate_trajectories_with_uncertainty <- function(sampled_thetas, init.state, outcome = "aki_hosp_model_4") {
   n_samples <- nrow(sampled_thetas)
-  trajectories <- matrix(0, nrow = n_samples, ncol = 365)
+  trajectories <- matrix(0, nrow = n_samples, ncol = 364)
   
   pb <- progress_bar$new(total = n_samples)
   
