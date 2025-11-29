@@ -227,8 +227,8 @@ aki_hosp_spell2 <- read_parquet(file.path(data_files_path, "a_hes_aki_spell_comm
   age_group == "aki_hosp_obs_4" & week_date == "2018-07-29" ~ NA_real_,
   age_group == "aki_hosp_obs_4" & week_date == "2018-08-05" ~ NA_real_,
   age_group == "aki_hosp_obs_4" & week_date == "2019-06-23" ~ NA_real_,
-  age_group == "aki_hosp_obs_4" & week_date == "2018-07-21" ~ NA_real_,
-  age_group == "aki_hosp_obs_4" & week_date == "2018-08-18" ~ NA_real_,
+  age_group == "aki_hosp_obs_4" & week_date == "2019-07-21" ~ NA_real_,
+  age_group == "aki_hosp_obs_4" & week_date == "2019-08-18" ~ NA_real_,
   TRUE ~ n
 ), year = year(week_date)
 ) |>

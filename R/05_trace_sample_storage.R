@@ -273,42 +273,42 @@ trace4 |>
 ########################################
 ########################################
 
-my_trace <- fread("data/trace_data/my_trace_19072024.txt")
-trace1 <- fread("data/trace_data/trace_1_26072024.txt")
-trace2 <- fread("data/trace_data/mcmc/trace_2_26072024.txt")
-trace3 <- fread("data/trace_data/mcmc/trace_3_26072024.txt")
-trace4 <- fread("data/trace_data/mcmc/trace_4_26072024.txt")
-
-my_trace <- mcmc(my_trace)
-trace1 <- mcmc(trace1)
-trace2 <- mcmc(trace2)
-trace3 <- mcmc(trace3)
-trace4 <- mcmc(trace4)
-
-my_trace_df <- data.frame(my_trace)
-setDT(my_trace_df)
-my_trace_df[, season_amp := season_amp / 100]
-my_trace_df[, season_offset := season_offset / 100]
-my_trace_df[, probT_under5 := exp(probT_under5)]
-my_trace_df[, probT_over5 := exp(probT_over5)]
-my_trace_df[, aki_hospitalisation_4 := exp(aki_hospitalisation_4)]
-my_trace_df[, gastro_hospitalisation_4 := exp(gastro_hospitalisation_4)]
-my_trace_df[, gastro_gp_attend_1 := exp(gastro_gp_attend_1)]
-my_trace_df[, gastro_gp_attend_2 := exp(gastro_gp_attend_2)]
-tail(my_trace_df)
-params_trace <- mcmc(my_trace_df[,1:15])
-log_density_trace <- mcmc(my_trace_df[,16])
-
-trace1_params <- mcmc(trace1[,1:15])
-trace1_log_density <- mcmc(trace1[,16])
-trace2_params <- mcmc(trace2[,1:15])
-trace2_log_density <- mcmc(trace1[,16])
-trace3_params <- mcmc(trace3[,1:15])
-trace3_log_density <- mcmc(trace3[,16])
-trace4_params <- mcmc(trace4[,1:15])
-trace4_log_density <- mcmc(trace4[,16])
-
-multi_trace_params <- mcmc.list(list(trace1_params, trace2_params, trace3_params, trace4_params))
-multi_trace_log_density <- mcmc.list(list(trace1_log_density, trace2_log_density, trace3_log_density, trace4_log_density))
-
-rmarkdown::render("R/06_mcmc_outputs.R", output_dir = ".", intermediates_dir = ".", output_file = paste0("mcmc_outputs", paste0(gsub("-", "", tolower(Sys.Date())), "_", format(Sys.time(), "%H%M"))))
+# my_trace <- fread("results/trace_data/trace_data/my_trace_19072024.txt")
+# trace1 <- fread("results/trace_data/trace_data/trace_1_26072024.txt")
+# trace2 <- fread("results/trace_data/trace_data/trace_2_26072024.txt")
+# trace3 <- fread("results/trace_data/trace_data/trace_3_26072024.txt")
+# trace4 <- fread("results/trace_data/trace_data/trace_4_26072024.txt")
+# 
+# my_trace <- mcmc(my_trace)
+# trace1 <- mcmc(trace1)
+# trace2 <- mcmc(trace2)
+# trace3 <- mcmc(trace3)
+# trace4 <- mcmc(trace4)
+# 
+# my_trace_df <- data.frame(my_trace)
+# setDT(my_trace_df)
+# my_trace_df[, season_amp := season_amp / 100]
+# my_trace_df[, season_offset := season_offset / 100]
+# my_trace_df[, probT_under5 := exp(probT_under5)]
+# my_trace_df[, probT_over5 := exp(probT_over5)]
+# my_trace_df[, aki_hospitalisation_4 := exp(aki_hospitalisation_4)]
+# my_trace_df[, gastro_hospitalisation_4 := exp(gastro_hospitalisation_4)]
+# my_trace_df[, gastro_gp_attend_1 := exp(gastro_gp_attend_1)]
+# my_trace_df[, gastro_gp_attend_2 := exp(gastro_gp_attend_2)]
+# tail(my_trace_df)
+# params_trace <- mcmc(my_trace_df[,1:15])
+# log_density_trace <- mcmc(my_trace_df[,16])
+# 
+# trace1_params <- mcmc(trace1[,1:15])
+# trace1_log_density <- mcmc(trace1[,16])
+# trace2_params <- mcmc(trace2[,1:15])
+# trace2_log_density <- mcmc(trace1[,16])
+# trace3_params <- mcmc(trace3[,1:15])
+# trace3_log_density <- mcmc(trace3[,16])
+# trace4_params <- mcmc(trace4[,1:15])
+# trace4_log_density <- mcmc(trace4[,16])
+# 
+# multi_trace_params <- mcmc.list(list(trace1_params, trace2_params, trace3_params, trace4_params))
+# multi_trace_log_density <- mcmc.list(list(trace1_log_density, trace2_log_density, trace3_log_density, trace4_log_density))
+# 
+# rmarkdown::render("R/06_mcmc_outputs.R", output_dir = ".", intermediates_dir = ".", output_file = paste0("mcmc_outputs", paste0(gsub("-", "", tolower(Sys.Date())), "_", format(Sys.time(), "%H%M"))))

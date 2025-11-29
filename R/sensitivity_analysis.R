@@ -435,10 +435,10 @@ sensitivity_analysis_parameter_table <- pivoted_table %>%
   arrange(Parameter) |> 
   filter(Parameter != "logDensity") |> 
   mutate(Parameter = case_when(
-    Parameter == "surveillance_report_1" ~ "Underreporting to surveillance 0-4",
-    Parameter == "surveillance_report_3" ~ "Underreporting to surveillance 15-64",
-    Parameter == "surveillance_report_4_winter" ~ "Underreporting to surveillance 65+ in the winter",
-    Parameter == "surveillance_report_4_summer" ~ "Underreporting to surveillance 65+ in the summer",
+    Parameter == "surveillance_report_1" ~ "Reporting to surveillance 0-4",
+    Parameter == "surveillance_report_3" ~ "Reporting to surveillance 15-64",
+    Parameter == "surveillance_report_4_winter" ~ "Reporting to surveillance 65+ in the winter",
+    Parameter == "surveillance_report_4_summer" ~ "Reporting to surveillance 65+ in the summer",
     Parameter == "season_amp" ~ "Seasonal amplitude term",
     Parameter == "season_offset" ~ "Seasonal offset term",
     Parameter == "probT_under5" ~ "Probability of infection between under 5s",
@@ -457,7 +457,7 @@ sensitivity_analysis_parameter_table <- pivoted_table %>%
   ) |>
   flextable::flextable()  |>    
   padding(padding = 1.5, part = "all") |>  
-  fontsize(size = 10, part = "all")  |> 
+  fontsize(size = 12, part = "all")  |> 
   width(j = 1, width = 3.7) |>  
   width(j = 2, width = 3.0) |>  
   width(j = 3, width = 3.0) |> 

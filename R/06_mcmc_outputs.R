@@ -49,7 +49,14 @@ xyplot( x = log_density_trace)
 
 #' ## effective sample size
 
-plotEssBurn(my_trace)
+essplot <- plotEssBurn(my_trace)
+
+essplot + theme(
+  axis.text = element_text(size = 12),      # axis numbers
+  axis.title = element_text(size = 14),     # axis labels
+  strip.text = element_text(size = 12),     # parameter names
+  strip.background = element_rect(fill = "white")
+)
 
 #' ## trace without burn in
 
@@ -65,7 +72,6 @@ effectiveSize(traceBurn)
 
 xyplot( x = traceBurn)
 
-plotEssBurn(traceBurn_params)
 
 #' #### logDensity
 
@@ -88,19 +94,52 @@ traceBurnThin_df <- burnAndThin(my_trace_df, burn = burn_value, thin = thin_fact
 traceBurnThin_params <- burnAndThin(params_trace, burn = burn_value, thin = thin_factor)
 traceBurnThin_log_density <- mcmc(traceBurnThin[,14])
 
+traceBurnThin_df |>
+  as.data.frame() |>
+  write_tsv("results/trace_data/traceBurnThin_df.txt")
+
+# label for the diagnostic figures
+
 effectiveSize(traceBurnThin)
 
-xyplot( x = traceBurnThin)
+# trellis.par.set(axis.text = list(cex = 1.2))
+# trellis.par.set(par.strip.text = list(cex = 1.2))
+# plotEssBurn(traceBurnThin_params)
+
+xyplot( x = traceBurnThin,
+        scales = list(cex = 1.4),
+        par.strip.text = list(cex = 1.4))
+
+thin_essplot <- plotEssBurn(traceBurnThin)
+
+thin_essplot + theme(
+  axis.text = element_text(size = 12),      # axis numbers
+  axis.title = element_text(size = 14),     # axis labels
+  strip.text = element_text(size = 12),     # parameter names
+  strip.background = element_rect(fill = "white")
+)
+
 
 #' #### logDensity
 
 xyplot( x = traceBurnThin_log_density)
 
-acfplot(x = traceBurnThin, lag.max = 60)
+acfplot(x = traceBurnThin, 
+        lag.max = 60,
+        scales = list(cex = 1.2),
+        par.strip.text = list(cex = 1.2))
 
 #' ## comparing thinned and unthinned trace
 
-plotPosteriorDensity(list(unthinned = traceBurn_df, thinned = traceBurnThin_df))
+post_thin_plot <- plotPosteriorDensity(list(unthinned = traceBurn_df, thinned = traceBurnThin_df))
+
+post_thin_plot + theme(
+  axis.text = element_text(size = 12),      # axis numbers
+  axis.title = element_text(size = 14),     # axis labels
+  strip.text = element_text(size = 12),     # parameter names
+  strip.background = element_rect(fill = "white")
+)
+
 
 # traceBurn_df_aki <- traceBurn_df |> 
 #   select(aki_hospitalisation_4) |> 
@@ -112,11 +151,26 @@ plotPosteriorDensity(list(unthinned = traceBurn_df, thinned = traceBurnThin_df))
 
 source("R/create_prior_distributions.R")
 
-plotPosteriorDensity(trace = traceBurnThin_df, prior = prior_df)
+post_prior_plot <- plotPosteriorDensity(trace = traceBurnThin_df, prior = prior_df)
+
+post_prior_plot + theme(
+  axis.text = element_text(size = 12),      # axis numbers
+  axis.title = element_text(size = 14),     # axis labels
+  strip.text = element_text(size = 12),     # parameter names
+  strip.background = element_rect(fill = "white")
+)
 
 #' ## correlation
 
-levelplot(traceBurnThin, col.regions = heat.colors(100), scales=list(x=list(rot=90)))
+levelplot(traceBurnThin, col.regions = heat.colors(100), scales=list(x=list(rot=45)))
+
+levelplot(traceBurnThin, 
+          col.regions = heat.colors(100), 
+          scales = list(
+            x = list(rot = 45, cex = 1.2),
+            y = list(cex = 1.2)
+          ),
+          colorkey = list(labels = list(cex = 1.0)))
 
 # mcmc_pairs(
 #   traceBurnThin_df,
@@ -232,12 +286,12 @@ parameter_order <- c(
 )
 
 posterior_table_image <- posterior_table |> 
-  mutate(theta = signif(theta, digits = 2),
-         q2.5 = signif(q2.5, digits = 2),
-         q97.5 = signif(q97.5, digits = 2),
+  mutate(theta = formatC(signif(theta, digits = 2), format = "f", digits = 6, drop0trailing = TRUE),
+         q2.5 = formatC(signif(q2.5, digits = 2), format = "f", digits = 6, drop0trailing = TRUE),
+         q97.5 = formatC(signif(q97.5, digits = 2), format = "f", digits = 6, drop0trailing = TRUE),
          cri = paste0(q2.5, "-", q97.5),
          "Median (95% CrI)" = paste0(theta, " ", paste0("(", cri, ")"))
-         ) |>
+         )|>
   filter(!row_number() %in% c(14)) |> 
   select(Parameter, `Median (95% CrI)` ) |>
   arrange(factor(Parameter, levels = parameter_order)) |> 
@@ -267,17 +321,17 @@ posterior_table_image <- posterior_table |>
     Parameter == "D_immun" ~ "Number of years individual is immune",
     Parameter == "sigma" ~ "Proportion of individuals symptomatic"
   ), Parameter = case_when(
-    Parameter == "surveillance_report_1" ~ "Underreporting to surveillance 0-4",
+    Parameter == "surveillance_report_1" ~ "Reporting to surveillance 0-4",
     # Parameter == "surveillance_report_1_winter" ~ "Underreporting to surveillance 0-4 in the winter",
     # Parameter == "surveillance_report_1_summer" ~ "Underreporting to surveillance 0-4 in the summer",
     # Parameter == "surveillance_report_2" ~ "Underreporting to surveillance 5-14",
     # Parameter == "surveillance_report_2_winter" ~ "Underreporting to surveillance 5-14 in the winter",
     # Parameter == "surveillance_report_2_summer" ~ "Underreporting to surveillance 5-14 in the summer",
-    Parameter == "surveillance_report_3" ~ "Underreporting to surveillance 15-64",
+    Parameter == "surveillance_report_3" ~ "Reporting to surveillance 15-64",
     # Parameter == "surveillance_report_3_winter" ~ "Underreporting to surveillance 15-64 in the winter",
     # Parameter == "surveillance_report_3_summer" ~ "Underreporting to surveillance 15-64 in the summer",
-    Parameter == "surveillance_report_4_winter" ~ "Underreporting to surveillance 65+ in the winter",
-    Parameter == "surveillance_report_4_summer" ~ "Underreporting to surveillance 65+ in the summer",
+    Parameter == "surveillance_report_4_winter" ~ "Reporting to surveillance 65+ in the winter",
+    Parameter == "surveillance_report_4_summer" ~ "Reporting to surveillance 65+ in the summer",
     Parameter == "season_amp" ~ "Seasonal amplitude term",
     Parameter == "season_offset" ~ "Seasonal offset term",
     # Parameter == "season_amp_over65" ~ "Scaling seasonal amplitude for over 65",
@@ -297,7 +351,7 @@ posterior_table_image <- posterior_table |>
   padding(padding = 1.5, part = "all") |>  
   fontsize(size = 10, part = "all")  |> 
   width(j = 1, width = 3.7) |>   # Adjust the width of the second column
-  width(j = 2, width = 2.5) |>  # Adjust the width of the second column
+  width(j = 2, width = 2.3) |>  # Adjust the width of the second column
   width(j = 3, width = 4.1) |> # Adjust the width of the second column
   height_all(height = 0.4) |> 
   hrule(rule = "exact") |>
@@ -1014,9 +1068,9 @@ multi_panel_healthcare_plot <- ggarrange(
 
 multi_panel_healthcare_plot
 
-ggarrange(gastro_gp_1, gastro_hosp_4, aki, ncol = 2, nrow = 2, common.legend = TRUE)
-
 ggsave("figures/multi_panel_healthcare_plot.png", width = 14, height = 12, dpi = 600, bg = "white")
+
+ggarrange(gastro_gp_1, gastro_hosp_4, aki, ncol = 2, nrow = 2, common.legend = TRUE)
 
 # ggsave("figures/multi_panel_figure_2.png", width = 12, height = 14)
 # ggsave("figures/multi_panel_figure_2.pdf", width = 12, height = 14)
@@ -1031,7 +1085,7 @@ cost_table <- cost_per_year_signif |>
   rbind(total_cost_signif) |>
   mutate(
     mean_cost_per_activity = as.double(mean_cost_per_activity),
-    across(infectious_symp_4_total:aki_max, scales::label_comma()),
+    across(infectious_symp_4_total:aki_max, scales::label_comma(accuracy = 1)),
     across(total_cost_year:max_cost_2021, scales::label_currency(prefix = "£", decimal.mark = ".")),
     aki_cri = paste0(aki_min, "-", aki_max),
          aki_range = paste0(aki_total, " ", paste0("(", aki_cri, ")")),

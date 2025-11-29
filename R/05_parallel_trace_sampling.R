@@ -119,6 +119,7 @@ with_progress({
       adaptSizeCooling <- 0.99
       adaptShapeStart <- 500
       iter <- 500000
+      # iter <- 120000
       
       # Run MCMC
       result <- mcmcMh(
@@ -155,32 +156,28 @@ trace4 <- mcmc(multiple_chains[[4]]$trace)
 
 trace1 |>
   as.data.frame() |>
-  write_tsv("results/trace_data/trace_1_26122024.txt")
+  write_tsv("results/trace_data/trace_1_16112025.txt")
 
 trace2 |>
   as.data.frame() |>
-  write_tsv("results/trace_data/trace_2_26122024.txt")
+  write_tsv("results/trace_data/trace_2_16112025.txt")
 
 trace3 |>
   as.data.frame() |>
-  write_tsv("results/trace_data/trace_3_26122024.txt")
+  write_tsv("results/trace_data/trace_3_16112025.txt")
 
 trace4 |>
   as.data.frame() |>
-  write_tsv("results/trace_data/trace_4_26122024.txt")
-
-# trace5 |>
-#  as.data.frame() |>
-#  write_tsv("results/trace_data/trace_5_19122024.txt")
+  write_tsv("results/trace_data/trace_4_16112025.txt")
 
 ######
 # store trace values
 ######
 
-trace1 <- fread(("results/trace_data/trace_1_26122024.txt"))
-trace2 <- fread(("results/trace_data/trace_2_26122024.txt"))
-trace3 <- fread(("results/trace_data/trace_3_26122024.txt"))
-trace4 <- fread(("results/trace_data/trace_4_26122024.txt"))
+trace1 <- fread(("results/trace_data/trace_1_16112025.txt"))
+trace2 <- fread(("results/trace_data/trace_2_16112025.txt"))
+trace3 <- fread(("results/trace_data/trace_3_16112025.txt"))
+trace4 <- fread(("results/trace_data/trace_4_16112025.txt"))
 
 trace1_params <- mcmc(trace1[,1:13])
 trace1_log_density <- mcmc(trace1[,14])
@@ -197,7 +194,7 @@ trace4_log_density <- mcmc(trace4[,14])
 multi_trace_params <- mcmc.list(list(trace1_params, trace2_params, trace3_params, trace4_params))
 multi_trace_log_density <- mcmc.list(list(trace1_log_density, trace2_log_density, trace3_log_density, trace4_log_density))
 
-my_trace <- trace3
+my_trace <- trace4
 my_trace <- mcmc(my_trace)
 
 xyplot(x = my_trace)

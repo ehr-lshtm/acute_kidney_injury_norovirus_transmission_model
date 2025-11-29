@@ -27,7 +27,7 @@ n_age_groups <- 4
 
 # ageing
 # prepare aging matrix
-ages <- c(4, 14, 64, 80)
+ages <- c(5, 15, 65, 81)
 da <- diff(c(0, ages))
 length(ages)
 aging <- diag(-1 / da)
