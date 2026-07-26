@@ -94,9 +94,9 @@ traceBurnThin_df <- burnAndThin(my_trace_df, burn = burn_value, thin = thin_fact
 traceBurnThin_params <- burnAndThin(params_trace, burn = burn_value, thin = thin_factor)
 traceBurnThin_log_density <- mcmc(traceBurnThin[,14])
 
-traceBurnThin_df |>
-  as.data.frame() |>
-  write_tsv("results/trace_data/traceBurnThin_df.txt")
+# traceBurnThin_df |>
+#   as.data.frame() |>
+#   write_tsv("results/trace_data/traceBurnThin_df.txt")
 
 # label for the diagnostic figures
 
